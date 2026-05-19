@@ -152,6 +152,84 @@ const deleteMatch = async (req, res) => {
   }
 };
 
+// GET /api/admin/pending-players — Bekleyen başvurular
+const getPendingPlayers = async (req, res) => {
+  try {
+    const pending = await Player.find({ accountStatus: 'pending' })
+      .select('-password')
+      .sort({ createdAt: -1 });
+    res.json(pending);
+  } catch (error) {
+    res.status(500).json({ message: 'Bekleyen oyuncular getirilemedi', error: error.message });
+  }
+};
+
+// PUT /api/admin/player/:id/approve — Oyuncu onaylama (admin statları ve piyasa değerini de girebilir)
+const approvePlayer = async (req, res) => {
+  try {
+    const player = await Player.findById(req.params.id);
+    if (!player) return res.status(404).json({ message: 'Oyuncu bulunamadı' });
+    if (player.accountStatus !== 'pending') {
+      return res.status(400).json({ message: 'Bu oyuncu zaten onaylanmış veya beklemede değil' });
+    }
+
+    // Admin stat ve piyasa değeri ekleyebilir
+    if (req.body.stats) player.stats = req.body.stats;
+    if (req.body.marketValue) player.marketValue = req.body.marketValue;
+    if (req.body.tags) player.tags = req.body.tags;
+
+    player.accountStatus = 'active';
+    player.rejectionMessage = '';
+    await player.save();
+
+    res.json({ message: `${player.name} onaylandı!`, player });
+  } catch (error) {
+    res.status(500).json({ message: 'Onaylama hatası', error: error.message });
+  }
+};
+
+// PUT /api/admin/player/:id/reject — Oyuncu başvurusu reddet
+const rejectPlayer = async (req, res) => {
+  try {
+    const player = await Player.findById(req.params.id);
+    if (!player) return res.status(404).json({ message: 'Oyuncu bulunamadı' });
+
+    player.accountStatus = 'rejected';
+    player.rejectionMessage = req.body.message || 'Admin tarafından reddedildi';
+    await player.save();
+
+    res.json({ message: `${player.name} reddedildi`, player });
+  } catch (error) {
+    res.status(500).json({ message: 'Reddetme hatası', error: error.message });
+  }
+};
+
+// PUT /api/admin/player/:id/link — Mevcut oyuncuyu yeni hesapla eşleştir
+const linkPlayer = async (req, res) => {
+  try {
+    const { pendingPlayerId } = req.body;
+    const existingPlayer = await Player.findById(req.params.id);
+    const pendingPlayer = await Player.findById(pendingPlayerId);
+
+    if (!existingPlayer || !pendingPlayer) {
+      return res.status(404).json({ message: 'Oyuncu bulunamadı' });
+    }
+
+    // Pending oyuncunun email/password bilgisini mevcut oyuncuya aktar
+    existingPlayer.email = pendingPlayer.email;
+    existingPlayer.password = pendingPlayer.password;
+    existingPlayer.accountStatus = 'active';
+    await existingPlayer.save();
+
+    // Pending kaydı sil
+    await Player.findByIdAndDelete(pendingPlayerId);
+
+    res.json({ message: `${pendingPlayer.name} → ${existingPlayer.name} ile eşleştirildi`, player: existingPlayer });
+  } catch (error) {
+    res.status(500).json({ message: 'Eşleştirme hatası', error: error.message });
+  }
+};
+
 module.exports = {
   adminLogin,
   createScandal,
@@ -159,5 +237,9 @@ module.exports = {
   deleteScandal,
   addBadge,
   updatePlayerStats,
-  deleteMatch
+  deleteMatch,
+  getPendingPlayers,
+  approvePlayer,
+  rejectPlayer,
+  linkPlayer
 };

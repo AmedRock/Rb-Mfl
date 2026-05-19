@@ -33,6 +33,27 @@ const playerSchema = new mongoose.Schema({
     default: ''
   },
 
+  // Oyuncu Hesap Bilgileri
+  email: {
+    type: String,
+    unique: true,
+    sparse: true, // null olan alanları unique kontrolünden hariç tut
+    trim: true,
+    lowercase: true
+  },
+  password: {
+    type: String // Düz metin olarak saklanır
+  },
+  accountStatus: {
+    type: String,
+    enum: ['none', 'pending', 'active', 'rejected'],
+    default: 'none' // none: admin tarafından eklenen, hesabı yok
+  },
+  rejectionMessage: {
+    type: String,
+    default: ''
+  },
+
   // FIFA İstatistikleri (1-99)
   stats: {
     pace: { type: Number, min: 1, max: 99, default: 50 },
@@ -85,8 +106,7 @@ const playerSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Overall hesaplama (kaydetmeden önce)
-playerSchema.pre('save', function(next) {
+playerSchema.pre('save', function() {
   const s = this.stats;
   // Pozisyona göre ağırlıklı OVR hesaplama
   const weights = {
@@ -114,7 +134,6 @@ playerSchema.pre('save', function(next) {
     s.defending * w.defending +
     s.physical * w.physical
   );
-  next();
 });
 
 module.exports = mongoose.model('Player', playerSchema);

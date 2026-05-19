@@ -13,24 +13,101 @@ export default function ManagePlayersTab({ authHeader }) {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY);
   const [status, setStatus] = useState('');
+  
+  // Fotoğraf yükleme için state'ler
+  const [photoFile, setPhotoFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
-  const openAdd = () => { setForm(EMPTY); setEditing(null); setMode('add'); setStatus(''); };
+  const openAdd = () => { 
+    setForm(EMPTY); 
+    setEditing(null); 
+    setMode('add'); 
+    setStatus(''); 
+    setPhotoFile(null); 
+    setPreviewUrl(null); 
+  };
+  
   const openEdit = (p) => {
     setEditing(p._id);
-    setForm({ name:p.name, nickname:p.nickname||'', number:p.number, photo:p.photo||'default.png', position:p.position, tags:(p.tags||[]).join(', '), motto:p.motto||'', marketValue:p.marketValue||50, stats:{...p.stats} });
-    setMode('edit'); setStatus('');
+    setForm({ 
+      name: p.name, 
+      nickname: p.nickname || '', 
+      number: p.number, 
+      photo: p.photo || 'default.png', 
+      position: p.position, 
+      tags: (p.tags || []).join(', '), 
+      motto: p.motto || '', 
+      marketValue: p.marketValue || 50, 
+      stats: { ...p.stats } 
+    });
+    setMode('edit'); 
+    setStatus('');
+    setPhotoFile(null);
+    setPreviewUrl(p.photo ? `/players/${p.photo}` : null);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setPhotoFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
   };
 
   const handleStat = (key, val) => setForm(f => ({ ...f, stats:{ ...f.stats, [key]: Math.min(99, Math.max(1, Number(val))) } }));
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); setStatus('');
-    const payload = { ...form, number:Number(form.number), marketValue:Number(form.marketValue), tags:form.tags.split(',').map(t=>t.trim()).filter(Boolean) };
+    e.preventDefault(); 
+    setStatus('Yükleniyor...');
+    
+    let uploadedFilename = form.photo;
+
     try {
-      if (mode === 'add') { await apiAuthPost('/players', payload, authHeader); setStatus('success:Oyuncu eklendi!'); }
-      else { await apiAuthPut(`/admin/player/${editing}/stats`, payload, authHeader); setStatus('success:Oyuncu güncellendi!'); }
-      refetch(); setTimeout(() => setMode('list'), 1000);
-    } catch (err) { setStatus('error:' + err.message); }
+      // 1. Eğer yeni bir fotoğraf seçildiyse önce onu yükle
+      if (photoFile) {
+        const formData = new FormData();
+        formData.append('photo', photoFile);
+        
+        const headers = { ...authHeader };
+        // FormData gönderilirken Content-Type tarayıcı tarafından otomatik belirlenmeli
+        delete headers['Content-Type']; 
+
+        const res = await fetch('/api/admin/upload', {
+          method: 'POST',
+          headers: headers,
+          body: formData
+        });
+
+        if (!res.ok) {
+          throw new Error('Fotoğraf yüklenemedi');
+        }
+
+        const data = await res.json();
+        uploadedFilename = data.filename;
+      }
+
+      // 2. Oyuncu verilerini kaydet
+      const payload = { 
+        ...form, 
+        photo: uploadedFilename,
+        number: Number(form.number), 
+        marketValue: Number(form.marketValue), 
+        tags: form.tags.split(',').map(t => t.trim()).filter(Boolean) 
+      };
+
+      if (mode === 'add') { 
+        await apiAuthPost('/players', payload, authHeader); 
+        setStatus('success:Oyuncu eklendi!'); 
+      } else { 
+        await apiAuthPut(`/admin/player/${editing}/stats`, payload, authHeader); 
+        setStatus('success:Oyuncu güncellendi!'); 
+      }
+      
+      refetch(); 
+      setTimeout(() => setMode('list'), 1000);
+    } catch (err) { 
+      setStatus('error:' + err.message); 
+    }
   };
 
   if (mode !== 'list') return (
@@ -48,16 +125,38 @@ export default function ManagePlayersTab({ authHeader }) {
           <div className="admin-form__group"><label>Forma No</label><input type="number" min="1" max="99" required value={form.number} onChange={e=>setForm({...form,number:e.target.value})} /></div>
           <div className="admin-form__group"><label>Pozisyon</label><select value={form.position} onChange={e=>setForm({...form,position:e.target.value})}>{POSITIONS.map(p=><option key={p}>{p}</option>)}</select></div>
         </div>
+        
+        {/* Fotoğraf Seçimi */}
         <div className="admin-form__group">
-          <label>Fotoğraf (public/players/ klasöründen)</label>
-          <div className="admin-photo-row">
-            <input placeholder="ahmet.png" value={form.photo} onChange={e=>setForm({...form,photo:e.target.value})} />
-            <img className="admin-photo-preview" src={`/players/${form.photo}`} alt="" onError={e=>{e.target.src='/players/default.png';}} />
+          <label>Profil Fotoğrafı</label>
+          <div className="admin-photo-upload">
+            <label className="admin-photo-upload__btn">
+              <span>📂 Cihazdan Seç</span>
+              <input 
+                type="file" 
+                accept="image/*" 
+                onChange={handleFileChange} 
+                style={{ display: 'none' }}
+              />
+            </label>
+            <div className="admin-photo-upload__info">
+              <img 
+                className="admin-photo-preview" 
+                src={previewUrl || (form.photo ? `/players/${form.photo}` : '/players/default.png')} 
+                alt="önizleme" 
+                onError={e => { e.target.onerror = null; e.target.src = '/players/default.png'; }} 
+              />
+              <span className="admin-photo-upload__filename">
+                {photoFile ? photoFile.name : (form.photo !== 'default.png' && form.photo ? form.photo : 'Dosya seçilmedi')}
+              </span>
+            </div>
           </div>
         </div>
+        
         <div className="admin-form__group"><label>Etiketler (virgülle ayırın)</label><input placeholder="Forvet, Hızlı" value={form.tags} onChange={e=>setForm({...form,tags:e.target.value})} /></div>
         <div className="admin-form__group"><label>Motto</label><textarea rows="2" value={form.motto} onChange={e=>setForm({...form,motto:e.target.value})} /></div>
         <div className="admin-form__group"><label>Piyasa Değeri (M)</label><input type="number" min="20" max="200" value={form.marketValue} onChange={e=>setForm({...form,marketValue:e.target.value})} /></div>
+        
         <div className="admin-form__group">
           <label>⚽ FIFA Statları (1-99)</label>
           <div className="stat-editor">
@@ -70,7 +169,11 @@ export default function ManagePlayersTab({ authHeader }) {
             ))}
           </div>
         </div>
-        <button type="submit" className="admin-submit-btn">{mode==='add'?'➕ Oyuncu Ekle':'💾 Kaydet'}</button>
+        
+        <button type="submit" className="admin-submit-btn" disabled={status === 'Yükleniyor...'}>
+          {status === 'Yükleniyor...' ? '⏳ Bekleyin...' : (mode==='add' ? '➕ Oyuncu Ekle' : '💾 Kaydet')}
+        </button>
+        
         {status.startsWith('success') && <p className="admin-msg admin-msg--success">✅ {status.replace('success:','')}</p>}
         {status.startsWith('error') && <p className="admin-msg admin-msg--error">❌ {status.replace('error:','')}</p>}
       </form>

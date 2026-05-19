@@ -1,43 +1,58 @@
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import AdminLogin from '../components/admin/AdminLogin';
+import GateScreen from '../components/admin/GateScreen';
+import MyProfilePanel from '../components/admin/MyProfilePanel';
 import AddMatchTab from '../components/admin/AddMatchTab';
 import SubmitResultTab from '../components/admin/SubmitResultTab';
 import ManagePlayersTab from '../components/admin/ManagePlayersTab';
 import BadgesTab from '../components/admin/BadgesTab';
 import ScandalTab from '../components/admin/ScandalTab';
+import PendingPlayersTab from '../components/admin/PendingPlayersTab';
 import '../styles/admin.css';
 
-const TABS = [
+const ADMIN_TABS = [
   { id: 'add-match', label: '📅 Maç Ekle' },
   { id: 'result', label: '🏆 Sonuç Gir' },
   { id: 'players', label: '⚽ Oyuncular' },
+  { id: 'pending', label: '👤 Onaylar' },
   { id: 'badges', label: '🏅 Rozetler' },
   { id: 'scandal', label: '📰 Skandal' }
 ];
 
 export default function AdminPanel() {
-  const { isAdmin, login, logout, authHeader } = useAuth();
+  const { isAdmin, isPlayer, loginAdmin, loginPlayer, logoutAdmin, logoutPlayer, adminAuthHeader } = useAuth();
   const [activeTab, setActiveTab] = useState('add-match');
-  const [adminLoggedIn, setAdminLoggedIn] = useState(isAdmin());
+  const [loggedIn, setLoggedIn] = useState(isAdmin() ? 'admin' : isPlayer() ? 'player' : null);
 
-  const handleLogin = (token) => {
-    login(token);
-    setAdminLoggedIn(true);
+  const handleAdminLogin = (token) => {
+    loginAdmin(token);
+    setLoggedIn('admin');
+  };
+
+  const handlePlayerLogin = (token, playerData) => {
+    loginPlayer(token, playerData);
+    setLoggedIn('player');
   };
 
   const handleLogout = () => {
-    logout();
-    setAdminLoggedIn(false);
+    if (loggedIn === 'admin') logoutAdmin();
+    else logoutPlayer();
+    setLoggedIn(null);
   };
 
-  if (!adminLoggedIn) {
-    return <AdminLogin onLogin={handleLogin} />;
+  // Giriş yapılmamış → GateScreen göster
+  if (!loggedIn) {
+    return <GateScreen onAdminLogin={handleAdminLogin} onPlayerLogin={handlePlayerLogin} />;
   }
 
+  // Oyuncu girişi → Kendi profili
+  if (loggedIn === 'player') {
+    return <MyProfilePanel onLogout={handleLogout} />;
+  }
+
+  // Admin girişi → Sır Odası
   return (
     <div className="admin-panel">
-      {/* Üst bar */}
       <div className="admin-panel__topbar">
         <div className="admin-panel__brand">
           <span>🔐</span>
@@ -49,9 +64,8 @@ export default function AdminPanel() {
       </div>
 
       <div className="admin-panel__body">
-        {/* Sol sekme menüsü */}
         <nav className="admin-panel__nav">
-          {TABS.map(tab => (
+          {ADMIN_TABS.map(tab => (
             <button
               key={tab.id}
               className={`admin-nav-item ${activeTab === tab.id ? 'admin-nav-item--active' : ''}`}
@@ -62,13 +76,13 @@ export default function AdminPanel() {
           ))}
         </nav>
 
-        {/* İçerik alanı */}
         <div className="admin-panel__content">
-          {activeTab === 'add-match' && <AddMatchTab authHeader={authHeader()} />}
-          {activeTab === 'result' && <SubmitResultTab authHeader={authHeader()} />}
-          {activeTab === 'players' && <ManagePlayersTab authHeader={authHeader()} />}
-          {activeTab === 'badges' && <BadgesTab authHeader={authHeader()} />}
-          {activeTab === 'scandal' && <ScandalTab authHeader={authHeader()} />}
+          {activeTab === 'add-match' && <AddMatchTab authHeader={adminAuthHeader()} />}
+          {activeTab === 'result' && <SubmitResultTab authHeader={adminAuthHeader()} />}
+          {activeTab === 'players' && <ManagePlayersTab authHeader={adminAuthHeader()} />}
+          {activeTab === 'pending' && <PendingPlayersTab authHeader={adminAuthHeader()} />}
+          {activeTab === 'badges' && <BadgesTab authHeader={adminAuthHeader()} />}
+          {activeTab === 'scandal' && <ScandalTab authHeader={adminAuthHeader()} />}
         </div>
       </div>
     </div>

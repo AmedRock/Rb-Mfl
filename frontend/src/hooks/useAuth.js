@@ -1,44 +1,93 @@
-// JWT Auth Hook - token localStorage'da tutulur
+// JWT Auth Hook — admin + player token yönetimi
 
-const TOKEN_KEY = 'rbmfl_admin_token';
+const ADMIN_TOKEN_KEY = 'rbmfl_admin_token';
+const PLAYER_TOKEN_KEY = 'rbmfl_player_token';
+const PLAYER_DATA_KEY = 'rbmfl_player_data';
 
 export function useAuth() {
-  const getToken = () => localStorage.getItem(TOKEN_KEY);
+  // ─── Admin ───
+  const getAdminToken = () => localStorage.getItem(ADMIN_TOKEN_KEY);
 
   const isAdmin = () => {
-    const token = getToken();
+    const token = getAdminToken();
     if (!token) return false;
     try {
-      // Token'ın süresini kontrol et (basit decode)
       const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.exp * 1000 > Date.now();
-    } catch {
-      return false;
-    }
+      return payload.role === 'admin' && payload.exp * 1000 > Date.now();
+    } catch { return false; }
   };
 
-  const login = (token) => {
-    localStorage.setItem(TOKEN_KEY, token);
+  const loginAdmin = (token) => {
+    // Admin girince oyuncu oturumunu kapat
+    localStorage.removeItem(PLAYER_TOKEN_KEY);
+    localStorage.removeItem(PLAYER_DATA_KEY);
+    localStorage.setItem(ADMIN_TOKEN_KEY, token);
   };
 
-  const logout = () => {
-    localStorage.removeItem(TOKEN_KEY);
+  const logoutAdmin = () => {
+    localStorage.removeItem(ADMIN_TOKEN_KEY);
   };
 
-  const authHeader = () => ({
-    'Authorization': `Bearer ${getToken()}`,
+  const adminAuthHeader = () => ({
+    'Authorization': `Bearer ${getAdminToken()}`,
     'Content-Type': 'application/json'
   });
 
-  return { isAdmin, login, logout, getToken, authHeader };
+  // ─── Player ───
+  const getPlayerToken = () => localStorage.getItem(PLAYER_TOKEN_KEY);
+
+  const isPlayer = () => {
+    const token = getPlayerToken();
+    if (!token) return false;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.role === 'player' && payload.exp * 1000 > Date.now();
+    } catch { return false; }
+  };
+
+  const loginPlayer = (token, playerData) => {
+    // Oyuncu girince admin oturumunu kapat
+    localStorage.removeItem(ADMIN_TOKEN_KEY);
+    localStorage.setItem(PLAYER_TOKEN_KEY, token);
+    localStorage.setItem(PLAYER_DATA_KEY, JSON.stringify(playerData));
+  };
+
+  const logoutPlayer = () => {
+    localStorage.removeItem(PLAYER_TOKEN_KEY);
+    localStorage.removeItem(PLAYER_DATA_KEY);
+  };
+
+  const getPlayerData = () => {
+    try {
+      return JSON.parse(localStorage.getItem(PLAYER_DATA_KEY));
+    } catch { return null; }
+  };
+
+  const playerAuthHeader = () => ({
+    'Authorization': `Bearer ${getPlayerToken()}`,
+    'Content-Type': 'application/json'
+  });
+
+  // ─── Eski uyumluluk (admin route'lar için) ───
+  const login = loginAdmin;
+  const logout = () => { logoutAdmin(); logoutPlayer(); };
+  const authHeader = adminAuthHeader;
+  const getToken = getAdminToken;
+
+  return {
+    // Admin
+    isAdmin, loginAdmin, logoutAdmin, getAdminToken, adminAuthHeader,
+    // Player
+    isPlayer, loginPlayer, logoutPlayer, getPlayerToken, getPlayerData, playerAuthHeader,
+    // Eski uyumluluk
+    login, logout, authHeader, getToken
+  };
 }
 
-// Auth gerektiren API çağrısı
-export async function apiAuthPost(endpoint, body, authHeader) {
+// ─── Auth gerektiren API helper'ları ───
+export async function apiAuthPost(endpoint, body, headers) {
   const response = await fetch(`/api${endpoint}`, {
-    method: 'POST',
-    headers: authHeader,
-    body: JSON.stringify(body)
+    method: 'POST', headers, body: JSON.stringify(body)
   });
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
@@ -47,11 +96,9 @@ export async function apiAuthPost(endpoint, body, authHeader) {
   return response.json();
 }
 
-export async function apiAuthPut(endpoint, body, authHeader) {
+export async function apiAuthPut(endpoint, body, headers) {
   const response = await fetch(`/api${endpoint}`, {
-    method: 'PUT',
-    headers: authHeader,
-    body: JSON.stringify(body)
+    method: 'PUT', headers, body: JSON.stringify(body)
   });
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
@@ -60,10 +107,20 @@ export async function apiAuthPut(endpoint, body, authHeader) {
   return response.json();
 }
 
-export async function apiAuthDelete(endpoint, authHeader) {
+export async function apiAuthDelete(endpoint, headers) {
   const response = await fetch(`/api${endpoint}`, {
-    method: 'DELETE',
-    headers: authHeader
+    method: 'DELETE', headers
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || `HTTP ${response.status}`);
+  }
+  return response.json();
+}
+
+export async function apiAuthGet(endpoint, headers) {
+  const response = await fetch(`/api${endpoint}`, {
+    method: 'GET', headers
   });
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
