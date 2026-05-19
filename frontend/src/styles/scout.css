@@ -1,0 +1,131 @@
+/* ================================================
+   Scout (Borsa & Oyuncular) Sayfa Stili
+   ================================================ */
+
+.scout {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.scout__header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.scout__header h1 {
+  font-size: 2rem;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.scout__header p {
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* Filtre barı */
+.scout__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 30px;
+  padding: 16px;
+}
+
+.scout__search {
+  flex: 1;
+  min-width: 200px;
+  max-width: 300px;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--bg-glass-border);
+  background: var(--bg-glass);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.scout__search:focus {
+  border-color: var(--accent-blue);
+}
+
+.scout__search::placeholder {
+  color: var(--text-muted);
+}
+
+.scout__select {
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--bg-glass-border);
+  background: var(--bg-glass);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238A8A9A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 36px;
+}
+
+.scout__select:focus {
+  border-color: var(--accent-blue);
+}
+
+.scout__select option {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+/* Oyuncu Grid */
+.scout__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  justify-items: center;
+}
+
+.scout__empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+}
+
+.scout__empty span {
+  display: block;
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+/* Yükleniyor */
+.scout__loading {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+}
+
+/* Toplam oyuncu sayısı */
+.scout__count {
+  text-align: center;
+  margin-bottom: 16px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.scout__count span {
+  color: var(--accent-gold);
+  font-weight: 700;
+}

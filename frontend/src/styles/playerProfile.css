@@ -1,0 +1,412 @@
+/* ================================================
+   Oyuncu Profil Sayfası Stili
+   ================================================ */
+
+.player-profile {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Geri butonu */
+.player-profile__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-glass);
+  border: 1px solid var(--bg-glass-border);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-bottom: 24px;
+}
+
+.player-profile__back:hover {
+  color: var(--text-primary);
+  background: var(--bg-card-hover);
+}
+
+/* Üst bölüm: Büyük kart + Biyografi */
+.player-profile__hero {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+@media (max-width: 800px) {
+  .player-profile__hero {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+}
+
+/* Büyük FIFA kartı */
+.player-profile__big-card {
+  position: relative;
+  width: 260px;
+  min-height: 400px;
+  border-radius: var(--radius-xl);
+  padding: 24px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all var(--transition-base);
+  overflow: hidden;
+}
+
+.player-profile__big-card.gold {
+  background: var(--card-gold);
+  border: 2px solid var(--card-gold-border);
+  box-shadow: var(--shadow-glow-gold);
+}
+
+.player-profile__big-card.silver {
+  background: var(--card-silver);
+  border: 2px solid var(--card-silver-border);
+}
+
+.player-profile__big-card.bronze {
+  background: var(--card-bronze);
+  border: 2px solid var(--card-bronze-border);
+}
+
+.player-profile__big-card:hover {
+  transform: rotateY(-3deg) rotateX(2deg);
+}
+
+.player-profile__big-ovr {
+  font-family: 'Outfit', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.gold .player-profile__big-ovr { color: #FFD700; }
+.silver .player-profile__big-ovr { color: #C0C0C0; }
+.bronze .player-profile__big-ovr { color: #CD853F; }
+
+.player-profile__big-pos {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 12px;
+}
+
+.player-profile__big-photo {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 12px;
+}
+
+.gold .player-profile__big-photo {
+  border: 3px solid rgba(255, 215, 0, 0.4);
+}
+.silver .player-profile__big-photo {
+  border: 3px solid rgba(192, 192, 192, 0.4);
+}
+.bronze .player-profile__big-photo {
+  border: 3px solid rgba(205, 133, 63, 0.4);
+}
+
+.player-profile__big-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.player-profile__big-nickname {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-top: 2px;
+}
+
+.player-profile__big-number {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  opacity: 0.2;
+}
+
+.player-profile__big-market {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.player-profile__big-market .value {
+  color: var(--accent-gold);
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+}
+
+/* Biyografi paneli */
+.player-profile__bio {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.player-profile__motto {
+  padding: 20px;
+  position: relative;
+}
+
+.player-profile__motto-text {
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.player-profile__motto-text::before {
+  content: '"';
+  font-family: 'Outfit', sans-serif;
+  font-size: 3rem;
+  color: var(--accent-gold);
+  opacity: 0.4;
+  position: absolute;
+  top: 8px;
+  left: 12px;
+}
+
+.player-profile__tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.player-profile__tag {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(68, 138, 255, 0.12);
+  color: var(--accent-blue);
+  border: 1px solid rgba(68, 138, 255, 0.2);
+}
+
+/* Kariyer istatistikleri */
+.player-profile__career {
+  padding: 20px;
+}
+
+.player-profile__career h3 {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.career-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+}
+
+.career-stat {
+  text-align: center;
+  padding: 12px 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.career-stat__value {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--accent-gold);
+  line-height: 1;
+}
+
+.career-stat__label {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+/* Skandal bildirimi */
+.player-profile__scandal {
+  padding: 16px 20px;
+  background: var(--accent-red-dim);
+  border: 1px solid rgba(255, 23, 68, 0.3);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.player-profile__scandal-icon {
+  font-size: 1.5rem;
+}
+
+.player-profile__scandal-text {
+  flex: 1;
+}
+
+.player-profile__scandal-headline {
+  font-weight: 700;
+  color: var(--accent-red);
+  font-size: 0.85rem;
+}
+
+.player-profile__scandal-impact {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* Alt bölüm: Grafikler */
+.player-profile__charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+@media (max-width: 800px) {
+  .player-profile__charts {
+    grid-template-columns: 1fr;
+  }
+}
+
+.player-profile__chart-card {
+  padding: 24px;
+}
+
+.player-profile__chart-card h3 {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+}
+
+/* Rozetler */
+.player-profile__badges {
+  margin-bottom: 30px;
+}
+
+.player-profile__badges h3 {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badges-grid {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 20px;
+  min-width: 100px;
+  text-align: center;
+}
+
+.badge-item__icon {
+  font-size: 2rem;
+}
+
+.badge-item__name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.badge-item__date {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+}
+
+/* Yükleniyor */
+.player-profile__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 12px;
+  color: var(--text-secondary);
+}
+
+.player-profile__loading span {
+  font-size: 3rem;
+}
+
+/* Stat çubuğu (büyük kart için) */
+.big-card-stats {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+  margin-top: 12px;
+}
+
+.big-card-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  padding: 2px 0;
+}
+
+.big-card-stat__label {
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 28px;
+}
+
+.big-card-stat__bar {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.big-card-stat__fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 1s ease;
+}
+
+.big-card-stat__fill.high { background: var(--accent-green); }
+.big-card-stat__fill.mid { background: var(--accent-gold); }
+.big-card-stat__fill.low { background: var(--accent-red); }
+
+.big-card-stat__value {
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  min-width: 22px;
+  text-align: right;
+}

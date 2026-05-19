@@ -1,0 +1,126 @@
+/* Admin Panel — Sır Odası */
+
+/* Login */
+.admin-login { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: radial-gradient(ellipse at center, #0d0d1a 0%, #060610 100%); }
+.admin-login__card { padding: 48px 40px; text-align: center; max-width: 380px; width: 100%; border-radius: var(--radius-xl); }
+.admin-login__card--shake { animation: shake 0.4s ease; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
+.admin-login__lock { font-size: 3.5rem; margin-bottom: 12px; }
+.admin-login__title { font-family: 'Outfit', sans-serif; font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, var(--accent-gold), #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.admin-login__subtitle { color: var(--text-secondary); font-size: 0.85rem; margin: 8px 0 24px; }
+.admin-login__form { display: flex; flex-direction: column; gap: 12px; }
+.admin-login__input { padding: 14px 18px; border-radius: var(--radius-sm); border: 1px solid var(--bg-glass-border); background: rgba(255,255,255,0.04); color: var(--text-primary); font-size: 1rem; text-align: center; letter-spacing: 4px; outline: none; transition: border-color var(--transition-fast); }
+.admin-login__input:focus { border-color: var(--accent-gold); }
+.admin-login__input--error { border-color: var(--accent-red); }
+.admin-login__error { color: var(--accent-red); font-size: 0.8rem; margin: 0; }
+.admin-login__btn { padding: 14px; border-radius: var(--radius-sm); border: none; background: linear-gradient(135deg, #FFD700, #FFA000); color: #000; font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all var(--transition-fast); }
+.admin-login__btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,215,0,0.3); }
+.admin-login__btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Panel Layout */
+.admin-panel { display: flex; flex-direction: column; min-height: 100vh; }
+.admin-panel__topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 56px; background: rgba(6,6,15,0.9); border-bottom: 1px solid rgba(255,255,255,0.06); backdrop-filter: blur(12px); position: sticky; top: 64px; z-index: 900; }
+.admin-panel__brand { display: flex; align-items: center; gap: 8px; }
+.admin-panel__brand-name { font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--accent-gold); }
+.admin-logout-btn { padding: 6px 14px; border-radius: var(--radius-sm); border: 1px solid rgba(255,23,68,0.3); background: rgba(255,23,68,0.08); color: var(--accent-red); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all var(--transition-fast); }
+.admin-logout-btn:hover { background: rgba(255,23,68,0.16); }
+.admin-panel__body { display: flex; flex: 1; min-height: 0; }
+.admin-panel__nav { width: 200px; min-width: 200px; background: var(--bg-secondary); border-right: 1px solid rgba(255,255,255,0.05); padding: 20px 0; display: flex; flex-direction: column; gap: 2px; }
+.admin-nav-item { padding: 12px 20px; text-align: left; border: none; background: none; color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; cursor: pointer; border-radius: 0; transition: all var(--transition-fast); border-left: 3px solid transparent; }
+.admin-nav-item:hover { color: var(--text-primary); background: rgba(255,255,255,0.04); }
+.admin-nav-item--active { color: var(--accent-gold); background: rgba(255,215,0,0.06); border-left-color: var(--accent-gold); }
+.admin-panel__content { flex: 1; padding: 24px; overflow-y: auto; }
+@media (max-width: 768px) { .admin-panel__nav { width: 56px; min-width: 56px; } .admin-nav-item { padding: 14px; font-size: 0; } .admin-nav-item::first-letter { font-size: 1.1rem; } }
+
+/* Tab içerikleri */
+.admin-tab { max-width: 720px; }
+.admin-tab__title { font-family: 'Outfit', sans-serif; font-size: 1.4rem; font-weight: 800; margin-bottom: 4px; }
+.admin-tab__desc { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 24px; }
+.admin-tab__header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.admin-tab__back-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.admin-back-btn { background: var(--bg-glass); border: 1px solid var(--bg-glass-border); color: var(--text-secondary); padding: 8px 14px; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.85rem; transition: all var(--transition-fast); }
+.admin-back-btn:hover { color: var(--text-primary); }
+
+/* Form */
+.admin-form { display: flex; flex-direction: column; gap: 16px; }
+.admin-form__group { display: flex; flex-direction: column; gap: 6px; }
+.admin-form__group label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 600; }
+.admin-form__group input, .admin-form__group select, .admin-form__group textarea { padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid var(--bg-glass-border); background: rgba(255,255,255,0.04); color: var(--text-primary); font-size: 0.9rem; font-family: 'Inter', sans-serif; outline: none; transition: border-color var(--transition-fast); }
+.admin-form__group input:focus, .admin-form__group select:focus, .admin-form__group textarea:focus { border-color: var(--accent-gold); }
+.admin-form__group select option { background: var(--bg-secondary); }
+.admin-form__row { display: flex; gap: 16px; }
+.admin-form__row .admin-form__group { flex: 1; }
+.admin-form__vs-badge { align-self: flex-end; padding: 10px 8px; font-family: 'Outfit', sans-serif; font-weight: 800; color: var(--text-muted); font-size: 0.8rem; }
+
+/* Butonlar */
+.admin-btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+.admin-btn-option { padding: 8px 18px; border-radius: var(--radius-sm); border: 1px solid var(--bg-glass-border); background: var(--bg-glass); color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all var(--transition-fast); }
+.admin-btn-option:hover { color: var(--text-primary); }
+.admin-btn-option--active { background: rgba(255,215,0,0.1); border-color: var(--accent-gold); color: var(--accent-gold); }
+.admin-submit-btn { padding: 12px 24px; border-radius: var(--radius-sm); border: none; background: linear-gradient(135deg, #FFD700, #FFA000); color: #000; font-family: 'Outfit', sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all var(--transition-fast); align-self: flex-start; }
+.admin-submit-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,215,0,0.25); }
+.admin-submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.admin-submit-btn--sm { font-size: 0.8rem; padding: 8px 16px; }
+.admin-submit-btn--danger { background: linear-gradient(135deg, #FF1744, #D50000); color: #fff; }
+.admin-action-btn { padding: 6px 12px; border-radius: var(--radius-sm); border: 1px solid var(--bg-glass-border); background: var(--bg-glass); color: var(--text-secondary); font-size: 0.75rem; cursor: pointer; transition: all var(--transition-fast); }
+.admin-action-btn:hover { color: var(--text-primary); background: var(--bg-card-hover); }
+.admin-action-btn--danger { border-color: rgba(255,23,68,0.3); color: var(--accent-red); }
+.admin-msg { padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 600; margin-top: 8px; }
+.admin-msg--success { background: var(--accent-green-dim); color: var(--accent-green); }
+.admin-msg--error { background: var(--accent-red-dim); color: var(--accent-red); }
+.admin-msg--info { background: rgba(68,138,255,0.1); color: #448AFF; }
+
+/* Fotoğraf önizleme */
+.admin-photo-row { display: flex; align-items: center; gap: 12px; }
+.admin-photo-row input { flex: 1; }
+.admin-photo-preview { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--bg-glass-border); }
+
+/* Stat editörü */
+.stat-editor { display: flex; flex-direction: column; gap: 10px; padding: 16px; background: rgba(255,255,255,0.02); border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.05); }
+.stat-editor__row { display: flex; align-items: center; gap: 10px; }
+.stat-editor__label { font-size: 0.75rem; color: var(--text-secondary); min-width: 70px; }
+.stat-editor__row input[type=range] { flex: 1; accent-color: var(--accent-gold); }
+.stat-editor__num { width: 52px !important; text-align: center; padding: 4px 8px !important; flex: none !important; }
+
+/* Sonuç giriş */
+.result-players { display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto; padding-right: 4px; }
+.result-player { padding: 12px; }
+.result-player__header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.result-player__header img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); }
+.result-player__name { display: block; font-weight: 600; font-size: 0.85rem; }
+.result-player__pos { font-size: 0.7rem; color: var(--text-secondary); }
+.result-player__counters { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.result-player__counters label { font-size: 0.85rem; }
+.result-player__counters input { width: 44px; padding: 4px 6px; border-radius: 4px; border: 1px solid var(--bg-glass-border); background: rgba(255,255,255,0.04); color: var(--text-primary); text-align: center; font-size: 0.8rem; }
+.result-player__ratings { display: flex; gap: 6px; flex-wrap: wrap; }
+.rating-btn { padding: 6px 10px; border-radius: var(--radius-sm); border: 1px solid var(--bg-glass-border); background: var(--bg-glass); color: var(--text-secondary); font-size: 0.7rem; font-family: 'Outfit', sans-serif; font-weight: 700; cursor: pointer; text-align: center; transition: all var(--transition-fast); min-width: 50px; }
+.rating-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text-primary); }
+.rating-btn--active { font-weight: 800; }
+
+/* Rozet seçici */
+.badge-picker { display: flex; flex-wrap: wrap; gap: 8px; }
+.badge-picker__item { padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid var(--bg-glass-border); background: var(--bg-glass); cursor: pointer; text-align: center; transition: all var(--transition-fast); }
+.badge-picker__item span { display: block; font-size: 1.5rem; }
+.badge-picker__item small { display: block; font-size: 0.65rem; color: var(--text-secondary); margin-top: 2px; }
+.badge-picker__item--active { border-color: var(--accent-gold); background: rgba(255,215,0,0.1); }
+
+/* Skandal */
+.scandal-preview { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-radius: var(--radius-sm); background: var(--accent-red-dim); border: 1px solid rgba(255,23,68,0.2); }
+.scandal-preview__old { font-family: 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--text-secondary); text-decoration: line-through; }
+.scandal-preview__new { font-family: 'Outfit', sans-serif; font-size: 1.4rem; font-weight: 900; color: var(--accent-red); }
+.scandal-preview__diff { font-size: 0.8rem; font-weight: 600; color: var(--accent-red); }
+.active-scandals { display: flex; flex-direction: column; gap: 10px; }
+.active-scandal { display: flex; align-items: center; gap: 12px; padding: 12px 16px; }
+.active-scandal img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+.active-scandal__info { flex: 1; }
+.active-scandal__name { display: block; font-weight: 600; font-size: 0.85rem; }
+.active-scandal__headline { display: block; font-size: 0.75rem; color: var(--text-secondary); }
+.active-scandal__impact { display: block; font-size: 0.7rem; color: var(--accent-red); font-weight: 700; }
+
+/* Oyuncu listesi */
+.admin-player-list { display: flex; flex-direction: column; gap: 8px; }
+.admin-player-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; }
+.admin-player-item img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); }
+.admin-player-item__info { flex: 1; }
+.admin-player-item__name { display: block; font-weight: 600; font-size: 0.9rem; }
+.admin-player-item__meta { font-size: 0.75rem; color: var(--text-secondary); }

@@ -1,0 +1,201 @@
+/* ================================================
+   FIFA Card - Dinamik Oyuncu Kartı Stili
+   Altın / Gümüş / Bronz varyantları
+   ================================================ */
+
+.fifa-card {
+  position: relative;
+  width: 220px;
+  min-height: 320px;
+  border-radius: var(--radius-lg);
+  padding: 20px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  overflow: hidden;
+  perspective: 1000px;
+}
+
+/* Kart Varyantları */
+.fifa-card.gold {
+  background: var(--card-gold);
+  border: 1.5px solid var(--card-gold-border);
+  box-shadow: var(--shadow-glow-gold);
+}
+
+.fifa-card.silver {
+  background: var(--card-silver);
+  border: 1.5px solid var(--card-silver-border);
+}
+
+.fifa-card.bronze {
+  background: var(--card-bronze);
+  border: 1.5px solid var(--card-bronze-border);
+}
+
+/* Hover efekti: 3D tilt */
+.fifa-card:hover {
+  transform: rotateY(-5deg) rotateX(5deg) scale(1.03);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+}
+
+.fifa-card.gold:hover {
+  box-shadow: 0 15px 40px rgba(255, 215, 0, 0.2);
+}
+
+/* Üst bölüm: OVR + Pozisyon */
+.fifa-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.fifa-card__ovr {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.gold .fifa-card__ovr { color: #FFD700; }
+.silver .fifa-card__ovr { color: #C0C0C0; }
+.bronze .fifa-card__ovr { color: #CD853F; }
+
+.fifa-card__pos {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* Fotoğraf bölümü */
+.fifa-card__photo-wrapper {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.fifa-card__photo-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.gold .fifa-card__photo-wrapper::after {
+  border-color: rgba(255, 215, 0, 0.3);
+}
+
+.fifa-card__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.9) brightness(0.95);
+}
+
+/* İsim */
+.fifa-card__name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.fifa-card__nickname {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-bottom: 10px;
+}
+
+/* Stat çubukları */
+.fifa-card__stats {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+}
+
+.fifa-card__stat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  padding: 2px 0;
+}
+
+.fifa-card__stat-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.fifa-card__stat-value {
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+}
+
+/* Stat değerine göre renk */
+.stat-high { color: var(--accent-green); }
+.stat-mid { color: var(--accent-gold); }
+.stat-low { color: var(--accent-red); }
+
+/* Piyasa değeri */
+.fifa-card__market {
+  margin-top: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.fifa-card__market .value {
+  color: var(--accent-gold);
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Skandal bildirim rozeti */
+.fifa-card__scandal-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--accent-red);
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  animation: pulse-glow 2s infinite;
+  box-shadow: var(--shadow-glow-red);
+}
+
+/* Shimmer yükleme animasyonu */
+.fifa-card.loading {
+  background: linear-gradient(
+    90deg,
+    var(--bg-card) 25%,
+    var(--bg-card-hover) 50%,
+    var(--bg-card) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}

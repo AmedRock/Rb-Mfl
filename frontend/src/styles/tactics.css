@@ -1,0 +1,746 @@
+/* ================================================
+   Taktik Tahtası Stili
+   Yeşil saha, slotlar, modal, güç barı
+   ================================================ */
+
+.tactics {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tactics__header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.tactics__header h1 {
+  font-size: 2rem;
+  background: linear-gradient(135deg, #4CAF50, #8BC34A);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tactics__header p {
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+/* ── Ayarlar Paneli ── */
+.tactics__settings {
+  padding: 20px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-end;
+}
+
+.tactics__label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.tactics__format-buttons,
+.tactics__formation-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tactics__format-btn,
+.tactics__formation-btn {
+  padding: 10px 20px;
+  border: 1px solid var(--bg-glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-glass);
+  color: var(--text-secondary);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tactics__format-btn:hover,
+.tactics__formation-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-card-hover);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.tactics__format-btn--active {
+  background: rgba(76, 175, 80, 0.15) !important;
+  border-color: #4CAF50 !important;
+  color: #4CAF50 !important;
+}
+
+.tactics__formation-btn--active {
+  background: rgba(255, 215, 0, 0.12) !important;
+  border-color: var(--accent-gold) !important;
+  color: var(--accent-gold) !important;
+}
+
+/* ── Yeşil Saha ── */
+.tactics__pitch-wrapper {
+  margin-bottom: 24px;
+}
+
+.pitch {
+  position: relative;
+  width: 100%;
+  padding-top: 55%; /* Aspect ratio */
+  background: linear-gradient(
+    180deg,
+    #1a5e20 0%,
+    #2e7d32 25%,
+    #1b5e20 25%,
+    #2e7d32 50%,
+    #1a5e20 50%,
+    #2e7d32 75%,
+    #1b5e20 75%,
+    #2e7d32 100%
+  );
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Saha çizgileri */
+.pitch__markings {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.pitch__center-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.pitch__center-circle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 16%;
+  aspect-ratio: 1;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+}
+
+.pitch__penalty-area--left {
+  position: absolute;
+  left: 0;
+  top: 20%;
+  width: 14%;
+  height: 60%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-left: none;
+  border-radius: 0 4px 4px 0;
+}
+
+.pitch__penalty-area--right {
+  position: absolute;
+  right: 0;
+  top: 20%;
+  width: 14%;
+  height: 60%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+}
+
+.pitch__goal-area--left {
+  position: absolute;
+  left: 0;
+  top: 35%;
+  width: 6%;
+  height: 30%;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-left: none;
+  border-radius: 0 2px 2px 0;
+}
+
+.pitch__goal-area--right {
+  position: absolute;
+  right: 0;
+  top: 35%;
+  width: 6%;
+  height: 30%;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-right: none;
+  border-radius: 2px 0 0 2px;
+}
+
+/* Takım etiketleri */
+.pitch__team-label {
+  position: absolute;
+  top: 4px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.pitch__team-label--a {
+  left: 20%;
+  color: #448AFF;
+}
+
+.pitch__team-label--b {
+  right: 20%;
+  color: #FF5252;
+}
+
+/* ── Oyuncu Slotu ── */
+.player-slot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all var(--transition-fast);
+}
+
+.player-slot:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  z-index: 20;
+}
+
+/* Boş slot */
+.player-slot--empty .player-slot__circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.slot--team-a .player-slot__circle {
+  background: rgba(68, 138, 255, 0.15);
+  border: 2px dashed rgba(68, 138, 255, 0.4);
+}
+
+.slot--team-b .player-slot__circle {
+  background: rgba(255, 82, 82, 0.15);
+  border: 2px dashed rgba(255, 82, 82, 0.4);
+}
+
+.player-slot--empty:hover .player-slot__circle {
+  transform: scale(1.1);
+}
+
+.slot--team-a .player-slot--empty:hover .player-slot__circle {
+  background: rgba(68, 138, 255, 0.3);
+  border-color: rgba(68, 138, 255, 0.6);
+  box-shadow: 0 0 12px rgba(68, 138, 255, 0.3);
+}
+
+.slot--team-b .player-slot--empty:hover .player-slot__circle {
+  background: rgba(255, 82, 82, 0.3);
+  border-color: rgba(255, 82, 82, 0.6);
+  box-shadow: 0 0 12px rgba(255, 82, 82, 0.3);
+}
+
+.player-slot__plus {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.player-slot__role {
+  display: block;
+  font-size: 0.55rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+  text-transform: uppercase;
+}
+
+/* Dolu slot */
+.player-slot--filled {
+  cursor: default;
+}
+
+.player-slot__avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  margin: 0 auto;
+}
+
+.slot--team-a .player-slot__avatar {
+  border: 2.5px solid #448AFF;
+  box-shadow: 0 0 8px rgba(68, 138, 255, 0.3);
+}
+
+.slot--team-b .player-slot__avatar {
+  border: 2.5px solid #FF5252;
+  box-shadow: 0 0 8px rgba(255, 82, 82, 0.3);
+}
+
+.player-slot__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.player-slot__ovr {
+  position: absolute;
+  bottom: -2px;
+  right: -4px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: 6px;
+  line-height: 1.2;
+}
+
+.slot--team-a .player-slot__ovr {
+  background: #448AFF;
+  color: white;
+}
+
+.slot--team-b .player-slot__ovr {
+  background: #FF5252;
+  color: white;
+}
+
+.player-slot__name {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: white;
+  margin-top: 3px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  white-space: nowrap;
+  max-width: 70px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-slot__remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #FF1744;
+  border: none;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  z-index: 30;
+}
+
+.player-slot:hover .player-slot__remove {
+  opacity: 1;
+}
+
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeInUp 0.2s ease;
+}
+
+.modal-content {
+  background: var(--bg-secondary);
+  border: 1px solid var(--bg-glass-border);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 480px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.modal-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+}
+
+.modal-header__role {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4CAF50;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+}
+
+.modal-close:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.modal-section {
+  padding: 12px 20px;
+}
+
+.modal-section__label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--accent-green);
+  font-weight: 600;
+  margin-bottom: 8px;
+  padding-left: 4px;
+}
+
+.modal-section__label--secondary {
+  color: var(--text-muted);
+}
+
+.modal-divider {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin: 4px 20px;
+}
+
+.modal-player-list {
+  list-style: none;
+}
+
+.modal-player-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.modal-player-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.modal-player-item--joker {
+  opacity: 0.65;
+}
+
+.modal-player-item--joker:hover {
+  opacity: 1;
+}
+
+.modal-player-item__photo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-player-item__info {
+  flex: 1;
+}
+
+.modal-player-item__name {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.modal-player-item__meta {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  margin-top: 1px;
+}
+
+.modal-player-item__badge {
+  flex-shrink: 0;
+}
+
+.modal-player-item__tags {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.modal-empty {
+  text-align: center;
+  padding: 30px 20px;
+  color: var(--text-secondary);
+}
+
+/* ── Güç Barı ── */
+.power-bar {
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  background: var(--bg-glass);
+  border: 1px solid var(--bg-glass-border);
+  border-radius: var(--radius-md);
+}
+
+.power-bar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.power-bar__label {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.power-bar__label--a { color: #448AFF; }
+.power-bar__label--b { color: #FF5252; }
+
+.power-bar__balance {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.power-bar__balance--balanced {
+  background: var(--accent-green-dim);
+  color: var(--accent-green);
+}
+
+.power-bar__balance--slightly {
+  background: rgba(255, 215, 0, 0.12);
+  color: var(--accent-gold);
+}
+
+.power-bar__balance--unbalanced {
+  background: var(--accent-red-dim);
+  color: var(--accent-red);
+}
+
+.power-bar__bars {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.power-bar__side {
+  flex: 1;
+  height: 10px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.power-bar__side--a {
+  direction: rtl; /* Bar sağdan sola dolsun */
+}
+
+.power-bar__fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.5s ease;
+}
+
+.power-bar__fill--a { background: linear-gradient(90deg, #448AFF, #82B1FF); }
+.power-bar__fill--b { background: linear-gradient(90deg, #FF5252, #FF8A80); }
+
+.power-bar__vs {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+
+.power-bar__scores {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+.power-bar__score {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.power-bar__score--a { color: #448AFF; }
+.power-bar__score--b { color: #FF5252; }
+
+.power-bar__diff {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+/* ── Aksiyon Butonları ── */
+.tactics__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.tactics__action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--bg-glass-border);
+  background: var(--bg-glass);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tactics__action-btn:hover:not(:disabled) {
+  background: var(--bg-card-hover);
+  transform: translateY(-1px);
+}
+
+.tactics__action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.tactics__action-btn--fill {
+  border-color: rgba(76, 175, 80, 0.3);
+  color: #4CAF50;
+}
+
+.tactics__action-btn--fill:hover:not(:disabled) {
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.tactics__action-btn--balance {
+  border-color: rgba(255, 215, 0, 0.3);
+  color: var(--accent-gold);
+}
+
+.tactics__action-btn--balance:hover:not(:disabled) {
+  background: rgba(255, 215, 0, 0.08);
+}
+
+.tactics__action-btn--save {
+  border-color: rgba(68, 138, 255, 0.3);
+  color: #448AFF;
+}
+
+.tactics__action-btn--save:hover:not(:disabled) {
+  background: rgba(68, 138, 255, 0.1);
+}
+
+.tactics__action-btn--clear {
+  border-color: rgba(255, 23, 68, 0.3);
+  color: var(--accent-red);
+}
+
+.tactics__action-btn--clear:hover:not(:disabled) {
+  background: rgba(255, 23, 68, 0.08);
+}
+
+.tactics__save-message {
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 10px;
+}
+
+/* Placeholder */
+.tactics__placeholder {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+}
+
+.tactics__placeholder span {
+  display: block;
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .pitch {
+    padding-top: 70%;
+  }
+
+  .player-slot__avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .player-slot--empty .player-slot__circle {
+    width: 34px;
+    height: 34px;
+  }
+
+  .player-slot__name {
+    font-size: 0.5rem;
+    max-width: 50px;
+  }
+
+  .tactics__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
