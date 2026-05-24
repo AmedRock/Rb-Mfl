@@ -14,7 +14,7 @@ function CustomTooltip({ active, payload, label }) {
           {payload[0].value}M
         </p>
         <p style={{ color: '#8A8A9A', fontSize: '0.7rem', margin: '4px 0 0 0' }}>
-          {label}
+          {payload[0].payload.label}
         </p>
         {payload[0].payload.reason && (
           <p style={{ color: '#aaa', fontSize: '0.65rem', margin: '2px 0 0 0', fontStyle: 'italic' }}>
@@ -38,7 +38,8 @@ export default function MarketChart({ marketHistory = [] }) {
   }
 
   const data = marketHistory.map((entry, index) => ({
-    name: new Date(entry.date).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short' }),
+    index,                // benzersiz XAxis key
+    label: new Date(entry.date).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short' }),
     value: entry.value,
     reason: entry.reason
   }));
@@ -63,10 +64,11 @@ export default function MarketChart({ marketHistory = [] }) {
           vertical={false}
         />
         <XAxis
-          dataKey="name"
+          dataKey="index"
           tick={{ fill: '#8A8A9A', fontSize: 10 }}
           axisLine={{ stroke: 'rgba(255,255,255,0.08)' }}
           tickLine={false}
+          tickFormatter={(idx) => data[idx]?.label ?? ''}
         />
         <YAxis
           tick={{ fill: '#8A8A9A', fontSize: 10 }}

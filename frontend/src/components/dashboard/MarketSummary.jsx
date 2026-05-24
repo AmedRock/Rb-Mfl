@@ -36,12 +36,12 @@ export default function MarketSummary({ risers = [], fallers = [] }) {
                   />
                   <div>
                     <div className="market-summary__player-name">{player.nickname || player.name}</div>
-                    <div className="market-summary__player-pos">{player.position}</div>
+                    <div className="market-summary__player-pos">{player.position} · {player.marketValue}M</div>
                   </div>
                 </div>
                 <span className="market-summary__change text-green">
                   <FaArrowUp style={{ marginRight: 4 }} />
-                  +{player.change}M
+                  +{player.changePercent}%
                 </span>
               </li>
             ))}
@@ -69,12 +69,12 @@ export default function MarketSummary({ risers = [], fallers = [] }) {
                   />
                   <div>
                     <div className="market-summary__player-name">{player.nickname || player.name}</div>
-                    <div className="market-summary__player-pos">{player.position}</div>
+                    <div className="market-summary__player-pos">{player.position} · {player.marketValue}M</div>
                   </div>
                 </div>
                 <span className="market-summary__change text-red">
                   <FaArrowDown style={{ marginRight: 4 }} />
-                  {player.change}M
+                  {player.changePercent}%
                 </span>
               </li>
             ))}

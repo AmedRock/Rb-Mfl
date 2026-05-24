@@ -53,16 +53,6 @@ export default function AdminPanel() {
   // Admin girişi → Sır Odası
   return (
     <div className="admin-panel">
-      <div className="admin-panel__topbar">
-        <div className="admin-panel__brand">
-          <span>🔐</span>
-          <span className="admin-panel__brand-name">Sır Odası</span>
-        </div>
-        <button className="admin-logout-btn" onClick={handleLogout}>
-          Çıkış Yap
-        </button>
-      </div>
-
       <div className="admin-panel__body">
         <nav className="admin-panel__nav">
           {ADMIN_TABS.map(tab => (
@@ -74,6 +64,10 @@ export default function AdminPanel() {
               {tab.label}
             </button>
           ))}
+          <div style={{ flex: 1 }} />
+          <button className="admin-logout-btn" style={{ margin: '8px 12px' }} onClick={handleLogout}>
+            Çıkış Yap
+          </button>
         </nav>
 
         <div className="admin-panel__content">

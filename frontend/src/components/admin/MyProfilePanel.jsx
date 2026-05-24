@@ -24,6 +24,8 @@ export default function MyProfilePanel({ onLogout }) {
   const [form, setForm] = useState({});
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
+  const [photoFile, setPhotoFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   const fetchProfile = async () => {
     setLoading(true);
@@ -43,25 +45,53 @@ export default function MyProfilePanel({ onLogout }) {
       motto: player.motto || '',
       photo: player.photo || 'default.png'
     });
+    setPhotoFile(null);
+    setPreviewUrl(null);
     setEditing(true);
     setSaveMsg('');
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setPhotoFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
   };
 
   const handleSave = async () => {
     setSaving(true); setSaveMsg('');
     try {
+      let uploadedFilename = form.photo;
+
+      // Yeni fotoğraf seçildiyse önce yükle
+      if (photoFile) {
+        const formData = new FormData();
+        formData.append('photo', photoFile);
+        const uploadRes = await fetch('/api/auth/upload-photo', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${getPlayerToken()}` },
+          body: formData
+        });
+        if (!uploadRes.ok) throw new Error('Fotoğraf yüklenemedi');
+        const uploadData = await uploadRes.json();
+        uploadedFilename = uploadData.filename;
+      }
+
       const res = await fetch(`/api/players/${player._id}`, {
         method: 'PUT',
         headers: playerAuthHeader(),
         body: JSON.stringify({
           nickname: form.nickname,
           motto: form.motto,
-          photo: form.photo
+          photo: uploadedFilename
         })
       });
       if (res.ok) {
         setSaveMsg('success');
         setEditing(false);
+        setPhotoFile(null);
+        setPreviewUrl(null);
         fetchProfile();
       } else {
         const err = await res.json();
@@ -96,22 +126,12 @@ export default function MyProfilePanel({ onLogout }) {
 
   return (
     <div className="my-profile">
-      {/* Üst bar */}
-      <div className="my-profile__topbar">
-        <div className="my-profile__topbar-info">
-          <img src={`/players/${player.photo || 'default.png'}`} alt={player.name}
-            onError={e => { e.target.onerror = null; e.target.src = '/players/default.png'; }} />
-          <div>
-            <span className="my-profile__topbar-name">{player.name}</span>
-            <span className="my-profile__topbar-role">Oyuncu Profili</span>
-          </div>
-        </div>
-        <div className="my-profile__topbar-actions">
-          {!editing && (
-            <button className="admin-action-btn" onClick={openEdit}>✏️ Düzenle</button>
-          )}
-          <button className="admin-logout-btn" onClick={onLogout}>Çıkış Yap</button>
-        </div>
+      {/* Aksiyon butonları */}
+      <div className="my-profile__actions">
+        {!editing && (
+          <button className="admin-action-btn" onClick={openEdit}>✏️ Düzenle</button>
+        )}
+        <button className="admin-logout-btn" onClick={onLogout}>Çıkış Yap</button>
       </div>
 
       {/* Düzenleme modu */}
@@ -122,6 +142,36 @@ export default function MyProfilePanel({ onLogout }) {
             Statlar ve piyasa değeri yalnızca admin tarafından değiştirilebilir.
           </p>
           <div className="admin-form">
+            {/* Profil Fotoğrafı */}
+            <div className="admin-form__group">
+              <label>Profil Fotoğrafı</label>
+              <div className="my-profile__photo-upload">
+                <label className="my-profile__photo-label" htmlFor="player-photo-input">
+                  <img
+                    className="my-profile__photo-preview"
+                    src={previewUrl || `/players/${form.photo || 'default.png'}`}
+                    alt="Profil fotoğrafı önizleme"
+                    onError={e => { e.target.onerror = null; e.target.src = '/players/default.png'; }}
+                  />
+                  <div className="my-profile__photo-overlay">
+                    <span>📷</span>
+                    <span>Fotoğraf Değiştir</span>
+                  </div>
+                </label>
+                <input
+                  id="player-photo-input"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  style={{ display: 'none' }}
+                />
+                {photoFile && (
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginTop: '6px', textAlign: 'center' }}>
+                    📎 {photoFile.name}
+                  </p>
+                )}
+              </div>
+            </div>
             <div className="admin-form__group">
               <label>Lakap</label>
               <input value={form.nickname} onChange={e => setForm({...form, nickname: e.target.value})} />
@@ -134,7 +184,7 @@ export default function MyProfilePanel({ onLogout }) {
               <button className="admin-submit-btn" onClick={handleSave} disabled={saving}>
                 {saving ? '⏳ Kaydediliyor...' : '💾 Kaydet'}
               </button>
-              <button className="admin-back-btn" onClick={() => setEditing(false)}>İptal</button>
+              <button className="admin-back-btn" onClick={() => { setEditing(false); setPhotoFile(null); setPreviewUrl(null); }}>İptal</button>
             </div>
             {saveMsg === 'success' && <p className="admin-msg admin-msg--success">✅ Profil güncellendi!</p>}
             {saveMsg.startsWith?.('error') && <p className="admin-msg admin-msg--error">❌ {saveMsg.replace('error:','')}</p>}

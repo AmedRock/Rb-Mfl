@@ -1,20 +1,29 @@
 import { NavLink } from 'react-router-dom';
-import { FaHome, FaSearch, FaChessBoard, FaCalendarAlt, FaLock } from 'react-icons/fa';
+import { FaHome, FaSearch, FaChessBoard, FaCalendarAlt, FaSignInAlt, FaUser, FaLock } from 'react-icons/fa';
 import { useAuth } from '../../hooks/useAuth';
-
-const navItems = [
-  { to: '/', label: 'Tesisler', icon: <FaHome /> },
-  { to: '/scout', label: 'Scout', icon: <FaSearch /> },
-  { to: '/tactics', label: 'Taktik', icon: <FaChessBoard /> },
-  { to: '/fixtures', label: 'Fikstür', icon: <FaCalendarAlt /> },
-  { to: '/admin', label: 'Sır Odası', icon: <FaLock /> }
-];
 
 export default function Navbar() {
   const { isPlayer, getPlayerData, isAdmin } = useAuth();
   const playerLoggedIn = isPlayer();
   const adminLoggedIn = isAdmin();
-  const playerData = playerLoggedIn ? getPlayerData() : null;
+
+  // Son nav item'ı duruma göre belirle
+  let authItem;
+  if (playerLoggedIn) {
+    authItem = { to: '/admin', label: 'Profilim', icon: <FaUser /> };
+  } else if (adminLoggedIn) {
+    authItem = { to: '/admin', label: 'Admin', icon: <FaLock /> };
+  } else {
+    authItem = { to: '/admin', label: 'Giriş Yap', icon: <FaSignInAlt /> };
+  }
+
+  const navItems = [
+    { to: '/', label: 'Tesisler', icon: <FaHome /> },
+    { to: '/scout', label: 'Scout', icon: <FaSearch /> },
+    { to: '/tactics', label: 'Taktik', icon: <FaChessBoard /> },
+    { to: '/fixtures', label: 'Fikstür', icon: <FaCalendarAlt /> },
+    authItem
+  ];
 
   return (
     <nav className="navbar">
@@ -24,7 +33,7 @@ export default function Navbar() {
       </div>
       <ul className="navbar__links">
         {navItems.map((item) => (
-          <li key={item.to}>
+          <li key={item.to + item.label}>
             <NavLink
               to={item.to}
               className={({ isActive }) =>
@@ -37,25 +46,6 @@ export default function Navbar() {
           </li>
         ))}
       </ul>
-
-      {/* Giriş durumu */}
-      {playerLoggedIn && playerData && (
-        <NavLink to="/admin" className="navbar__user">
-          <img
-            className="navbar__user-photo"
-            src={`/players/${playerData.photo || 'default.png'}`}
-            alt={playerData.name}
-            onError={e => { e.target.onerror = null; e.target.src = '/players/default.png'; }}
-          />
-          <span className="navbar__user-name">{playerData.name?.split(' ')[0]}</span>
-        </NavLink>
-      )}
-      {adminLoggedIn && (
-        <NavLink to="/admin" className="navbar__user navbar__user--admin">
-          <span>🔐</span>
-          <span className="navbar__user-name">Admin</span>
-        </NavLink>
-      )}
     </nav>
   );
 }

@@ -99,7 +99,7 @@ const getMarketMovers = async (req, res) => {
           changePercent
         };
       })
-      .sort((a, b) => b.change - a.change);
+      .sort((a, b) => b.changePercent - a.changePercent);
 
     const risers = movers.filter(m => m.change > 0).slice(0, 3);
     const fallers = movers.filter(m => m.change < 0).slice(-3).reverse();
