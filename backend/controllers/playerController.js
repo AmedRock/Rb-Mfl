@@ -1,22 +1,47 @@
 const Player = require('../models/Player');
 
+// İstatistik alanları
+const STAT_FIELDS = ['pace', 'shooting', 'passing', 'dribbling', 'defending', 'physical'];
+
 // GET /api/players - Tüm oyuncuları getir
 const getPlayers = async (req, res) => {
   try {
-    const { sort, position, search } = req.query;
+    const { sort, position, search, ...rest } = req.query;
 
     let filter = {};
     if (position) filter.position = position;
     if (search) filter.name = { $regex: search, $options: 'i' };
 
+    // OVR aralığı
+    if (rest.minOvr || rest.maxOvr) {
+      filter.overall = {};
+      if (rest.minOvr) filter.overall.$gte = Number(rest.minOvr);
+      if (rest.maxOvr) filter.overall.$lte = Number(rest.maxOvr);
+    }
+
+    // Stat aralıkları (pace, shooting, passing, dribbling, defending, physical)
+    STAT_FIELDS.forEach(stat => {
+      const minKey = `min${stat.charAt(0).toUpperCase() + stat.slice(1)}`;
+      const maxKey = `max${stat.charAt(0).toUpperCase() + stat.slice(1)}`;
+      if (rest[minKey] || rest[maxKey]) {
+        filter[`stats.${stat}`] = {};
+        if (rest[minKey]) filter[`stats.${stat}`].$gte = Number(rest[minKey]);
+        if (rest[maxKey]) filter[`stats.${stat}`].$lte = Number(rest[maxKey]);
+      }
+    });
+
     let sortOption = {};
     switch (sort) {
-      case 'overall': sortOption = { overall: -1 }; break;
-      case 'pace': sortOption = { 'stats.pace': -1 }; break;
-      case 'shooting': sortOption = { 'stats.shooting': -1 }; break;
+      case 'overall':   sortOption = { overall: -1 }; break;
+      case 'pace':      sortOption = { 'stats.pace': -1 }; break;
+      case 'shooting':  sortOption = { 'stats.shooting': -1 }; break;
+      case 'passing':   sortOption = { 'stats.passing': -1 }; break;
+      case 'dribbling': sortOption = { 'stats.dribbling': -1 }; break;
+      case 'defending': sortOption = { 'stats.defending': -1 }; break;
+      case 'physical':  sortOption = { 'stats.physical': -1 }; break;
       case 'marketValue': sortOption = { marketValue: -1 }; break;
-      case 'name': sortOption = { name: 1 }; break;
-      default: sortOption = { overall: -1 };
+      case 'name':      sortOption = { name: 1 }; break;
+      default:          sortOption = { overall: -1 };
     }
 
     const players = await Player.find(filter).sort(sortOption);
