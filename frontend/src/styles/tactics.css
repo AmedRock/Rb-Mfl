@@ -212,13 +212,22 @@
 .player-slot {
   position: absolute;
   transform: translate(-50%, -50%);
-  text-align: center;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  z-index: 10;
+  z-index: 2;
   transition: all var(--transition-fast);
 }
 
-.player-slot:hover {
+.player-slot--readonly {
+  cursor: default !important;
+}
+
+.player-slot:not(.player-slot--readonly):hover {
   transform: translate(-50%, -50%) scale(1.1);
   z-index: 20;
 }
@@ -525,7 +534,45 @@
   color: var(--text-secondary);
 }
 
-/* ── Güç Barı ── */
+/* ── SubRole ipucu ── */
+.modal-subrole-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px 10px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.modal-subrole-hint__icon { font-size: 0.9rem; }
+.modal-subrole-hint strong { color: var(--accent-gold); }
+
+/* ── İdeal oyuncu vurgusu ── */
+.modal-player-item--ideal {
+  background: rgba(255, 215, 0, 0.04);
+  border-left: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+.modal-player-item--ideal:hover {
+  background: rgba(255, 215, 0, 0.08) !important;
+}
+
+.modal-player-item__ideal-tag {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(255, 215, 0, 0.15);
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
+}
+
+
 .power-bar {
   padding: 16px 20px;
   margin-bottom: 20px;

@@ -6,7 +6,8 @@ export default function PitchField({
   teamAAssignments,
   teamBAssignments,
   onSlotClick,
-  onRemove
+  onRemove,
+  readOnly
 }) {
   return (
     <div className="pitch">
@@ -33,6 +34,7 @@ export default function PitchField({
           team="A"
           onClick={() => onSlotClick(slot, 'A')}
           onRemove={(slotId) => onRemove(slotId, 'A')}
+          readOnly={readOnly}
         />
       ))}
 
@@ -45,6 +47,7 @@ export default function PitchField({
           team="B"
           onClick={() => onSlotClick(slot, 'B')}
           onRemove={(slotId) => onRemove(slotId, 'B')}
+          readOnly={readOnly}
         />
       ))}
     </div>

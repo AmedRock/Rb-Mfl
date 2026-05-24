@@ -6,9 +6,35 @@
  * 2. Uyumlu mevki takası matrisi (DEF↔MID gibi takaslar mümkün)
  * 3. Simulated Annealing — local optimumdan kaçış
  * 4. Snake Draft autoFill — baştan dengeli dağıtım
+ * 5. SubRole bilgisiyle (LB, RB, CB vs.) kesin pozisyon eşleşmesi
  */
 
 import { TAG_MAP } from './formations';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POZİSYON → ROL EŞLEŞMESİ
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Her role için "perfect" kabul edilen gerçek futbol pozisyonları.
+ * 11'li futboldaki tüm mevkiler burada karşılığını buluyor.
+ */
+const ROLE_POSITIONS = {
+  GK:  ['GK'],
+  DEF: ['CB', 'LB', 'RB', 'CDM'],           // Tüm savunma oyuncuları
+  MID: ['CM', 'CAM', 'CDM', 'LM', 'RM'],    // Tüm orta saha oyuncuları
+  FWD: ['ST', 'CF', 'LW', 'RW'],            // Tüm hücum oyuncuları
+};
+
+/**
+ * subRole bonus: oyuncunun pozisyonu slot'un subRole'uyla tam eşleşirse
+ * ek puan verir — bu sayede autoFill'de LB LB slotuna, RB RB slotuna gider.
+ */
+function subRoleBonus(player, slot) {
+  if (!slot?.subRole) return 0;
+  if (player.position === slot.subRole) return 15; // tam eşleşme
+  return 0;
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. POZİSYONA GÖRE AĞIRLIKLI SKOR
@@ -181,18 +207,31 @@ export function balanceTeams(teamASlots, teamBSlots, teamAAssignments, teamBAssi
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MEVKI UYUM KONTROLÜ (autoFill için)
+// MEVKİ UYUM KONTROLÜ
 // ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Bir oyuncunun belirli bir role uyumunu kontrol eder.
+ *
+ * perfect → Tam uyum: rol grubunun gerçek futbol pozisyonu (LB, RB, CB, CDM...)
+ *           ya da eşleşen tag
+ * partial → Bitişik grup: DEF slotuna MID, MID slotuna FWD gibi
+ * none    → Hiç uyum yok
+ */
 export function checkTagMatch(player, role) {
+  // 1. Tag uyumu (kullanıcı tanımlı etiketler)
   const matchingTags = TAG_MAP[role] || [];
   const playerTags   = player.tags || [];
-
   if (playerTags.some(tag => matchingTags.includes(tag))) return 'perfect';
-  if (role === 'GK'  && player.position === 'GK') return 'perfect';
-  if (role === 'DEF' && ['CB', 'LB', 'RB', 'CDM'].includes(player.position)) return 'partial';
-  if (role === 'MID' && ['CM', 'CAM', 'CDM', 'LM', 'RM'].includes(player.position)) return 'partial';
-  if (role === 'FWD' && ['ST', 'CF', 'LW', 'RW', 'LM', 'RM'].includes(player.position)) return 'partial';
+
+  // 2. Pozisyon bazlı tam uyum — gerçek futbol mevkileri dahil
+  const perfectPositions = ROLE_POSITIONS[role] || [];
+  if (perfectPositions.includes(player.position)) return 'perfect';
+
+  // 3. Kısmi uyum — bitişik roller (joker seçenekler)
+  if (role === 'DEF' && ['CM', 'CAM'].includes(player.position)) return 'partial';
+  if (role === 'MID' && ['CB', 'LB', 'RB', 'ST', 'CF', 'LW', 'RW'].includes(player.position)) return 'partial';
+  if (role === 'FWD' && ['CAM', 'LM', 'RM'].includes(player.position)) return 'partial';
 
   return 'none';
 }
@@ -244,7 +283,8 @@ export function autoFillSlots(slotsA, slotsB, allPlayers, currentA = {}, current
       .map(p => ({
         player: p,
         match:  checkTagMatch(p, slot.role),
-        score:  playerScore(p, slot.role),
+        // subRole bonusu: LB → LB slotuna, RB → RB slotuna önce gider
+        score:  playerScore(p, slot.role) + subRoleBonus(p, slot),
       }));
 
     candidates.sort((a, b) => {

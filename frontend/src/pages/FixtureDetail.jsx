@@ -1,6 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useFetch } from '../hooks/useFetch';
 import { FaArrowLeft, FaStar, FaFutbol, FaHandsHelping } from 'react-icons/fa';
+import PitchField from '../components/tactics/PitchField';
+import { generateSlots, mirrorSlots } from '../utils/formations';
 import '../styles/fixtures.css';
 
 function formatDate(d) {
@@ -32,6 +34,34 @@ export default function FixtureDetail() {
 
   const teamAWon = match.status === 'completed' && match.teamA.score > match.teamB.score;
   const teamBWon = match.status === 'completed' && match.teamB.score > match.teamA.score;
+
+  // Saha yerleşimi için verileri hazırla
+  const hasSquad = match.formation && match.squadAssignments && Object.keys(match.squadAssignments).length > 0;
+  
+  let teamASlots = [];
+  let teamBSlots = [];
+  let teamAAssignments = {};
+  let teamBAssignments = {};
+
+  if (hasSquad) {
+    teamASlots = generateSlots(match.formation);
+    teamBSlots = mirrorSlots(teamASlots);
+    
+    // Tüm oyuncuları lookup için birleştir
+    const allPlayers = [...(match.teamA?.players || []), ...(match.teamB?.players || [])];
+    
+    // Atamaları oluştur
+    Object.entries(match.squadAssignments).forEach(([slotId, playerId]) => {
+      const playerObj = allPlayers.find(p => p._id === playerId);
+      if (playerObj) {
+        if (slotId.startsWith('b_')) {
+          teamBAssignments[slotId] = playerObj;
+        } else {
+          teamAAssignments[slotId] = playerObj;
+        }
+      }
+    });
+  }
 
   return (
     <div className="fixture-detail">
@@ -82,7 +112,30 @@ export default function FixtureDetail() {
         )}
       </div>
 
-      {/* Kadro + Performans */}
+      {/* Taktik Tahtası (Kadro) */}
+      {hasSquad ? (
+        <div className="fixture-detail__pitch-wrapper glass-card animate-fade-in animate-fade-in-delay-1" style={{ padding: '20px', marginBottom: '24px', overflow: 'hidden' }}>
+          <h3 style={{ textAlign: 'center', marginBottom: '15px' }}>📋 Maç Kadrosu</h3>
+          <div style={{ transform: 'scale(0.85)', transformOrigin: 'top center', marginBottom: '-10%', marginTop: '-15px' }}>
+            <PitchField
+              teamASlots={teamASlots}
+              teamBSlots={teamBSlots}
+              teamAAssignments={teamAAssignments}
+              teamBAssignments={teamBAssignments}
+              onSlotClick={() => {}}
+              onRemove={() => {}}
+              readOnly={true}
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="fixture-detail__pitch-wrapper glass-card animate-fade-in animate-fade-in-delay-1" style={{ padding: '40px 20px', textAlign: 'center', marginBottom: '24px', color: 'var(--text-secondary)' }}>
+          <h3 style={{ marginBottom: '10px' }}>📋 Maç Kadrosu</h3>
+          <p>Bu maç için saha dizilişi bilgisi henüz girilmemiştir.</p>
+        </div>
+      )}
+
+      {/* Performans İstatistikleri */}
       <div className="fixture-detail__grid">
         {/* Takım A kadrosu */}
         <div className="fixture-detail__squad glass-card animate-fade-in animate-fade-in-delay-1">

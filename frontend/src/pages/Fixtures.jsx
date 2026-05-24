@@ -17,7 +17,14 @@ export default function Fixtures() {
   const { data: matches, loading, error, refetch } = useFetch('/matches');
 
   const filtered = (matches || []).filter(m => {
-    const statusMatch = m.status === activeTab;
+    const isPast = new Date(m.date) < new Date();
+    
+    // Yaklaşan: Statüsü upcoming ve tarihi geçmemiş
+    // Geçmiş: Statüsü completed VEYA tarihi geçmiş
+    const statusMatch = activeTab === 'upcoming' 
+      ? (m.status === 'upcoming' && !isPast)
+      : (m.status === 'completed' || isPast);
+      
     const formatMatch = formatFilter === 'Tümü' || m.format === formatFilter;
     return statusMatch && formatMatch;
   });

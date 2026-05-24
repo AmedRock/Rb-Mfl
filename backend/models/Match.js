@@ -10,6 +10,14 @@ const matchSchema = new mongoose.Schema({
     enum: ['6v6', '7v7', '8v8'],
     default: '7v7'
   },
+  formation: {
+    type: String, // e.g. "3-2-1"
+    default: ''
+  },
+  squadAssignments: {
+    type: mongoose.Schema.Types.Mixed, // Object mapping slotId to Player ID, e.g. { "def_0": "60d...", "b_mid_1": "60d..." }
+    default: {}
+  },
   status: {
     type: String,
     enum: ['upcoming', 'completed'],

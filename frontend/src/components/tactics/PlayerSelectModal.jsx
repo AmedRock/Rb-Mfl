@@ -1,6 +1,6 @@
-import { FaCheck, FaExchangeAlt } from 'react-icons/fa';
+import { FaCheck, FaExchangeAlt, FaStar } from 'react-icons/fa';
 import { checkTagMatch } from '../../utils/teamBalancer';
-import { ROLE_LABELS } from '../../utils/formations';
+import { ROLE_LABELS, POSITION_LABELS } from '../../utils/formations';
 
 export default function PlayerSelectModal({
   isOpen,
@@ -8,39 +8,46 @@ export default function PlayerSelectModal({
   allPlayers,
   usedPlayerIds,
   onSelect,
-  onClose
+  onClose,
 }) {
   if (!isOpen || !slot) return null;
 
   const available = allPlayers.filter(p => !usedPlayerIds.has(p._id));
 
-  // Önerilen (tam uyum) ve joker (diğer) olarak ayır
-  const suggested = [];
-  const jokers = [];
+  // ── Oyuncuları grupla ──────────────────────────────────────────────────────
+  const suggested = [];  // perfect uyum
+  const jokers    = [];  // partial/none uyum
 
   available.forEach(player => {
     const match = checkTagMatch(player, slot.role);
     if (match === 'perfect') {
-      suggested.push({ ...player, matchType: 'perfect' });
+      // subRole ile tam eşleşen oyuncuya "ideal" bayrağı koy
+      const isIdeal = slot.subRole && player.position === slot.subRole;
+      suggested.push({ ...player, matchType: 'perfect', isIdeal });
     } else {
       jokers.push({ ...player, matchType: match });
     }
   });
 
-  // Her grubu OVR'ye göre sırala
-  suggested.sort((a, b) => (b.overall || 0) - (a.overall || 0));
-  jokers.sort((a, b) => {
-    // Partial uyumlar üstte
-    if (a.matchType !== b.matchType) {
-      return a.matchType === 'partial' ? -1 : 1;
-    }
+  // Suggested: önce ideal (subRole eşleşen), sonra OVR'ye göre
+  suggested.sort((a, b) => {
+    if (a.isIdeal !== b.isIdeal) return a.isIdeal ? -1 : 1;
     return (b.overall || 0) - (a.overall || 0);
   });
 
+  // Jokers: partial üste, sonra OVR'ye göre
+  jokers.sort((a, b) => {
+    if (a.matchType !== b.matchType) return a.matchType === 'partial' ? -1 : 1;
+    return (b.overall || 0) - (a.overall || 0);
+  });
+
+  const subRoleLabel = slot.subRole ? POSITION_LABELS[slot.subRole] : null;
+
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        {/* Başlık */}
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+
+        {/* ── Başlık ── */}
         <div className="modal-header">
           <h3>
             <span className="modal-header__role">{ROLE_LABELS[slot.role] || slot.role}</span>
@@ -49,7 +56,18 @@ export default function PlayerSelectModal({
           <button className="modal-close" onClick={onClose}>×</button>
         </div>
 
-        {/* Önerilen Oyuncular */}
+        {/* ── SubRole ipucu ── */}
+        {subRoleLabel && (
+          <div className="modal-subrole-hint">
+            <span className="modal-subrole-hint__icon">🎯</span>
+            <span>
+              Bu slot için ideal mevki:&nbsp;
+              <strong>{subRoleLabel} ({slot.subRole})</strong>
+            </span>
+          </div>
+        )}
+
+        {/* ── Önerilen Oyuncular (perfect uyum) ── */}
         {suggested.length > 0 && (
           <div className="modal-section">
             <div className="modal-section__label">
@@ -60,23 +78,32 @@ export default function PlayerSelectModal({
               {suggested.map(player => (
                 <li
                   key={player._id}
-                  className="modal-player-item modal-player-item--suggested"
+                  className={`modal-player-item modal-player-item--suggested ${
+                    player.isIdeal ? 'modal-player-item--ideal' : ''
+                  }`}
                   onClick={() => onSelect(player)}
                 >
                   <img
                     className="modal-player-item__photo"
                     src={`/players/${player.photo || 'default.png'}`}
                     alt={player.name}
-                    onError={(e) => { e.target.src = '/players/default.png'; }}
+                    onError={e => { e.target.src = '/players/default.png'; }}
                   />
                   <div className="modal-player-item__info">
-                    <span className="modal-player-item__name">{player.name}</span>
+                    <span className="modal-player-item__name">
+                      {player.name}
+                      {player.isIdeal && (
+                        <span className="modal-player-item__ideal-tag">İdeal</span>
+                      )}
+                    </span>
                     <span className="modal-player-item__meta">
-                      {player.position} · OVR {player.overall} · {player.marketValue}M
+                      {POSITION_LABELS[player.position] || player.position}
+                      &nbsp;·&nbsp;OVR {player.overall}
+                      &nbsp;·&nbsp;{player.marketValue}M
                     </span>
                   </div>
                   <span className="modal-player-item__badge badge-green">
-                    ✓ Tam Uyum
+                    {player.isIdeal ? <><FaStar style={{ marginRight: 3 }} />İdeal</> : '✓ Uyumlu'}
                   </span>
                 </li>
               ))}
@@ -84,12 +111,10 @@ export default function PlayerSelectModal({
           </div>
         )}
 
-        {/* Ayırıcı */}
-        {suggested.length > 0 && jokers.length > 0 && (
-          <hr className="modal-divider" />
-        )}
+        {/* ── Ayırıcı ── */}
+        {suggested.length > 0 && jokers.length > 0 && <hr className="modal-divider" />}
 
-        {/* Diğer Seçenekler / Jokerler */}
+        {/* ── Joker / Diğer Seçenekler ── */}
         {jokers.length > 0 && (
           <div className="modal-section">
             <div className="modal-section__label modal-section__label--secondary">
@@ -107,12 +132,14 @@ export default function PlayerSelectModal({
                     className="modal-player-item__photo"
                     src={`/players/${player.photo || 'default.png'}`}
                     alt={player.name}
-                    onError={(e) => { e.target.src = '/players/default.png'; }}
+                    onError={e => { e.target.src = '/players/default.png'; }}
                   />
                   <div className="modal-player-item__info">
                     <span className="modal-player-item__name">{player.name}</span>
                     <span className="modal-player-item__meta">
-                      {player.position} · OVR {player.overall} · {player.marketValue}M
+                      {POSITION_LABELS[player.position] || player.position}
+                      &nbsp;·&nbsp;OVR {player.overall}
+                      &nbsp;·&nbsp;{player.marketValue}M
                     </span>
                   </div>
                   <span className="modal-player-item__tags">

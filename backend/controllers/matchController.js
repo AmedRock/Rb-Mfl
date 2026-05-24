@@ -98,6 +98,41 @@ const submitMatchResult = async (req, res) => {
   }
 };
 
+// PUT /api/matches/:id/squad - Maçın kadrosunu güncelle (Admin)
+const updateMatchSquad = async (req, res) => {
+  try {
+    const match = await Match.findById(req.params.id);
+    if (!match) {
+      return res.status(404).json({ message: 'Maç bulunamadı' });
+    }
+
+    const { format, formation, teamA, teamB, squadAssignments } = req.body;
+
+    if (format) match.format = format;
+    if (formation) match.formation = formation;
+    
+    if (teamA) {
+      match.teamA.players = teamA.players;
+      if (teamA.name) match.teamA.name = teamA.name;
+    }
+    
+    if (teamB) {
+      match.teamB.players = teamB.players;
+      if (teamB.name) match.teamB.name = teamB.name;
+    }
+    
+    if (squadAssignments) {
+      match.squadAssignments = squadAssignments;
+    }
+
+    await match.save();
+
+    res.json({ message: 'Kadro başarıyla maça bağlandı', match });
+  } catch (error) {
+    res.status(500).json({ message: 'Kadro kaydedilemedi', error: error.message });
+  }
+};
+
 // GET /api/matches/:id - Tek maç detayı
 const getMatchById = async (req, res) => {
   try {
@@ -123,5 +158,6 @@ module.exports = {
   getNextMatch,
   createMatch,
   submitMatchResult,
+  updateMatchSquad,
   getMatchById
 };

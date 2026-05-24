@@ -1,17 +1,18 @@
-export default function PlayerSlot({ slot, player, team, onClick, onRemove }) {
+export default function PlayerSlot({ slot, player, team, onClick, onRemove, readOnly }) {
   const isEmpty = !player;
   const teamClass = team === 'A' ? 'slot--team-a' : 'slot--team-b';
+  const readOnlyClass = readOnly ? 'player-slot--readonly' : '';
 
   return (
     <div
-      className={`player-slot ${teamClass} ${isEmpty ? 'player-slot--empty' : 'player-slot--filled'}`}
+      className={`player-slot ${teamClass} ${isEmpty ? 'player-slot--empty' : 'player-slot--filled'} ${readOnlyClass}`}
       style={{
         left: `${slot.x}%`,
         top: `${slot.y}%`
       }}
-      onClick={() => isEmpty && onClick && onClick(slot)}
+      onClick={() => !readOnly && isEmpty && onClick && onClick(slot)}
       role="button"
-      tabIndex={0}
+      tabIndex={readOnly ? -1 : 0}
       title={isEmpty ? `${slot.role} seç` : player.name}
     >
       {isEmpty ? (
@@ -34,16 +35,18 @@ export default function PlayerSlot({ slot, player, team, onClick, onRemove }) {
           <span className="player-slot__name">
             {player.nickname || player.name.split(' ')[0]}
           </span>
-          <button
-            className="player-slot__remove"
-            onClick={(e) => {
-              e.stopPropagation();
-              onRemove && onRemove(slot.id);
-            }}
-            title="Kaldır"
-          >
-            ×
-          </button>
+          {!readOnly && (
+            <button
+              className="player-slot__remove"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemove && onRemove(slot.id);
+              }}
+              title="Kaldır"
+            >
+              ×
+            </button>
+          )}
         </>
       )}
     </div>

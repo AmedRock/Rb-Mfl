@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import { useFetch, apiPost } from '../hooks/useFetch';
+import { useFetch, apiPost, apiPut } from '../hooks/useFetch';
+import { useAuth } from '../hooks/useAuth';
 import { FORMATS, FORMATIONS, generateSlots, mirrorSlots } from '../utils/formations';
 import { autoFillSlots, balanceTeams } from '../utils/teamBalancer';
 import PitchField from '../components/tactics/PitchField';
@@ -9,6 +10,8 @@ import { FaMagic, FaBalanceScale, FaSave, FaTrashAlt } from 'react-icons/fa';
 import '../styles/tactics.css';
 
 export default function TacticsBoard() {
+  const { isAdmin } = useAuth();
+  
   // Maç ayarları
   const [format, setFormat] = useState('');
   const [formation, setFormation] = useState('');
@@ -26,8 +29,13 @@ export default function TacticsBoard() {
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
 
-  // Oyuncuları backend'den çek
+  // Oyuncuları ve maçları backend'den çek
   const { data: players } = useFetch('/players');
+  const { data: matches } = useFetch('/matches');
+  
+  // Maç seçme modalı durumu
+  const [matchSelectModalOpen, setMatchSelectModalOpen] = useState(false);
+  const [modalError, setModalError] = useState('');
 
   // Slotları hesapla
   const teamASlots = useMemo(() => {
@@ -127,22 +135,51 @@ export default function TacticsBoard() {
     setTeamBAssignments({});
   };
 
-  // Kadroyu kaydet
-  const handleSave = async () => {
+  // Kadroyu kaydet - Admin kontrolü
+  const handleSave = () => {
+    if (!isAdmin()) {
+      setSaveMessage('⚠️ Sadece yetkili kişiler (Admin) kadroyu maça bağlayabilir.');
+      return;
+    }
+    setModalError('');
+    setMatchSelectModalOpen(true);
+  };
+
+  const handleConfirmMatchSelect = async (match) => {
+    setModalError(''); // Önceki hataları temizle
+    
+    if (match.format !== format) {
+      setModalError(`⚠️ Uyarı: Seçtiğiniz maç ${match.format} formatında, ancak kurduğunuz kadro ${format} formatında. Lütfen ${format} formatında bir maç seçin.`);
+      return;
+    }
+
+    const hasSquad = match.formation && Object.keys(match.squadAssignments || {}).length > 0;
+    if (hasSquad) {
+      if (!window.confirm('⚠️ Bu maçın halihazırda bir kadrosu var. Üzerine yazmak istediğinize emin misiniz?')) {
+        return;
+      }
+    }
+
     setSaving(true);
     setSaveMessage('');
+    setMatchSelectModalOpen(false);
+
     try {
       const teamAPlayerIds = Object.values(teamAAssignments).filter(Boolean).map(p => p._id);
       const teamBPlayerIds = Object.values(teamBAssignments).filter(Boolean).map(p => p._id);
 
-      await apiPost('/matches', {
-        date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Varsayılan: 1 hafta sonra
+      const squadAssignments = {};
+      Object.entries(teamAAssignments).forEach(([slotId, p]) => { if (p) squadAssignments[slotId] = p._id; });
+      Object.entries(teamBAssignments).forEach(([slotId, p]) => { if (p) squadAssignments[slotId] = p._id; });
+
+      await apiPut(`/matches/${match._id}/squad`, {
         format: format,
-        status: 'upcoming',
-        teamA: { players: teamAPlayerIds, name: 'Takım A' },
-        teamB: { players: teamBPlayerIds, name: 'Takım B' }
+        formation: formation,
+        teamA: { players: teamAPlayerIds },
+        teamB: { players: teamBPlayerIds },
+        squadAssignments
       });
-      setSaveMessage('✅ Kadro başarıyla kaydedildi!');
+      setSaveMessage('✅ Kadro başarıyla maça bağlandı!');
     } catch (err) {
       setSaveMessage(`❌ Hata: ${err.message}`);
     } finally {
@@ -259,7 +296,23 @@ export default function TacticsBoard() {
           </div>
 
           {saveMessage && (
-            <div className="tactics__save-message animate-fade-in">
+            <div className="tactics__save-message animate-fade-in" style={{
+              marginTop: '20px',
+              padding: '12px',
+              borderRadius: 'var(--radius-sm)',
+              background: saveMessage.includes('⚠️') || saveMessage.includes('❌') 
+                ? 'rgba(255, 82, 82, 0.1)' 
+                : 'rgba(0, 230, 118, 0.1)',
+              border: '1px solid',
+              borderColor: saveMessage.includes('⚠️') || saveMessage.includes('❌') 
+                ? 'rgba(255, 82, 82, 0.3)' 
+                : 'rgba(0, 230, 118, 0.3)',
+              color: saveMessage.includes('⚠️') || saveMessage.includes('❌') 
+                ? 'var(--accent-red)' 
+                : 'var(--accent-green)',
+              textAlign: 'center',
+              fontWeight: '600'
+            }}>
               {saveMessage}
             </div>
           )}
@@ -294,6 +347,66 @@ export default function TacticsBoard() {
           setSelectedTeam(null);
         }}
       />
+      {/* Maç Seçim Modalı */}
+      {matchSelectModalOpen && (
+        <div className="modal-overlay" onClick={() => setMatchSelectModalOpen(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Maç Seç</h3>
+              <button className="modal-close" onClick={() => setMatchSelectModalOpen(false)}>×</button>
+            </div>
+            
+            <div className="modal-section" style={{ maxHeight: '60vh', overflowY: 'auto', padding: '0 10px 10px' }}>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '10px' }}>
+                Kadroyu bağlamak istediğiniz maçı seçin:
+              </p>
+              
+              {modalError && (
+                <div style={{
+                  padding: '12px',
+                  marginBottom: '15px',
+                  borderRadius: 'var(--radius-sm)',
+                  backgroundColor: 'rgba(255, 82, 82, 0.1)',
+                  border: '1px solid rgba(255, 82, 82, 0.3)',
+                  color: 'var(--accent-red)',
+                  fontSize: '0.85rem',
+                  lineHeight: '1.4'
+                }}>
+                  {modalError}
+                </div>
+              )}
+
+              <ul className="modal-player-list">
+                {(matches || []).map(m => {
+                  const isPast = new Date(m.date) < new Date();
+                  const hasSquad = m.formation && Object.keys(m.squadAssignments || {}).length > 0;
+                  return (
+                    <li
+                      key={m._id}
+                      className="modal-player-item"
+                      onClick={() => handleConfirmMatchSelect(m)}
+                    >
+                      <div className="modal-player-item__info">
+                        <span className="modal-player-item__name">
+                          {new Date(m.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        </span>
+                        <span className="modal-player-item__meta">
+                          {isPast ? 'Geçmiş Maç' : 'Gelecek Maç'} · Format: {m.format}
+                        </span>
+                      </div>
+                      {hasSquad && (
+                        <span className="modal-player-item__badge" style={{ backgroundColor: 'rgba(255, 23, 68, 0.15)', color: 'var(--accent-red)', padding: '3px 8px', borderRadius: '4px', fontSize: '0.7rem' }}>
+                          Kadro Var
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -18,6 +18,7 @@
 .match-card--upcoming { border-left: 3px solid #448AFF; }
 .match-card--completed { border-left: 3px solid var(--accent-green); }
 .match-card__status-badge { font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 10px; background: rgba(255,255,255,0.06); color: var(--text-secondary); white-space: nowrap; }
+.match-card__status-badge--pending { background: rgba(255, 215, 0, 0.12); color: var(--accent-gold); }
 .match-card__format { font-family: 'Outfit', sans-serif; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); min-width: 40px; }
 .match-card__score-row { display: flex; align-items: center; gap: 12px; flex: 1; justify-content: center; }
 .match-card__team { display: flex; align-items: center; gap: 10px; }

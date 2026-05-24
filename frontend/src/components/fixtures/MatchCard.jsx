@@ -8,10 +8,16 @@ function formatDate(dateStr) {
 }
 
 export default function MatchCard({ match, onClick, onDelete, isAdmin }) {
-  const isUpcoming = match.status === 'upcoming';
+  const isPast = new Date(match.date) < new Date();
+  const isUpcoming = match.status === 'upcoming' && !isPast;
+  const isPendingResult = match.status === 'upcoming' && isPast;
   const isCompleted = match.status === 'completed';
   const teamAWon = isCompleted && match.teamA.score > match.teamB.score;
   const teamBWon = isCompleted && match.teamB.score > match.teamA.score;
+
+  let badgeText = '⏳ Yaklaşan';
+  if (isPendingResult) badgeText = '📝 Sonuç Bekliyor';
+  if (isCompleted) badgeText = '✅ Tamamlandı';
 
   return (
     <div
@@ -21,8 +27,8 @@ export default function MatchCard({ match, onClick, onDelete, isAdmin }) {
       tabIndex={0}
     >
       {/* Durum rozeti */}
-      <div className="match-card__status-badge">
-        {isUpcoming ? '⏳ Yaklaşan' : '✅ Tamamlandı'}
+      <div className={`match-card__status-badge ${isPendingResult ? 'match-card__status-badge--pending' : ''}`}>
+        {badgeText}
       </div>
 
       {/* Format */}
