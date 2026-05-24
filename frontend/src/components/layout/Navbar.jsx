@@ -3,15 +3,14 @@ import { FaHome, FaSearch, FaChessBoard, FaCalendarAlt, FaSignInAlt, FaUser, FaL
 import { useAuth } from '../../hooks/useAuth';
 
 export default function Navbar() {
-  const { isPlayer, getPlayerData, isAdmin } = useAuth();
-  const playerLoggedIn = isPlayer();
-  const adminLoggedIn = isAdmin();
+  const { authState } = useAuth();
 
-  // Son nav item'ı duruma göre belirle
+  // Son nav item'ı giriş durumuna göre belirle (authState reactive olduğu için
+  // giriş/çıkış anında Navbar otomatik güncellenir)
   let authItem;
-  if (playerLoggedIn) {
+  if (authState === 'player') {
     authItem = { to: '/admin', label: 'Profilim', icon: <FaUser /> };
-  } else if (adminLoggedIn) {
+  } else if (authState === 'admin') {
     authItem = { to: '/admin', label: 'Admin', icon: <FaLock /> };
   } else {
     authItem = { to: '/admin', label: 'Giriş Yap', icon: <FaSignInAlt /> };
@@ -49,3 +48,4 @@ export default function Navbar() {
     </nav>
   );
 }
+

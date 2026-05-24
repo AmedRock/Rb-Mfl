@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import Layout from './components/layout/Layout';
 import Dashboard from './pages/Dashboard';
 import Scout from './pages/Scout';
@@ -11,19 +12,21 @@ import './styles/globals.css';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="scout" element={<Scout />} />
-          <Route path="player/:id" element={<PlayerProfile />} />
-          <Route path="tactics" element={<TacticsBoard />} />
-          <Route path="fixtures" element={<Fixtures />} />
-          <Route path="fixture/:id" element={<FixtureDetail />} />
-          <Route path="admin" element={<AdminPanel />} />
-        </Route>
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="scout" element={<Scout />} />
+            <Route path="player/:id" element={<PlayerProfile />} />
+            <Route path="tactics" element={<TacticsBoard />} />
+            <Route path="fixtures" element={<Fixtures />} />
+            <Route path="fixture/:id" element={<FixtureDetail />} />
+            <Route path="admin" element={<AdminPanel />} />
+          </Route>
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 

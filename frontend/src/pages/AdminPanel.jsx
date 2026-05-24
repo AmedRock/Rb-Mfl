@@ -20,34 +20,23 @@ const ADMIN_TABS = [
 ];
 
 export default function AdminPanel() {
-  const { isAdmin, isPlayer, loginAdmin, loginPlayer, logoutAdmin, logoutPlayer, adminAuthHeader } = useAuth();
+  // authState context'ten gelir — reactive, lokal kopyaya gerek yok
+  const { authState, loginAdmin, loginPlayer, logout, adminAuthHeader } = useAuth();
   const [activeTab, setActiveTab] = useState('add-match');
-  const [loggedIn, setLoggedIn] = useState(isAdmin() ? 'admin' : isPlayer() ? 'player' : null);
 
-  const handleAdminLogin = (token) => {
-    loginAdmin(token);
-    setLoggedIn('admin');
-  };
-
-  const handlePlayerLogin = (token, playerData) => {
-    loginPlayer(token, playerData);
-    setLoggedIn('player');
-  };
-
-  const handleLogout = () => {
-    if (loggedIn === 'admin') logoutAdmin();
-    else logoutPlayer();
-    setLoggedIn(null);
-  };
-
-  // Giriş yapılmamış → GateScreen göster
-  if (!loggedIn) {
-    return <GateScreen onAdminLogin={handleAdminLogin} onPlayerLogin={handlePlayerLogin} />;
+  // Giriş yapılmamış → GateScreen
+  if (!authState) {
+    return (
+      <GateScreen
+        onAdminLogin={loginAdmin}
+        onPlayerLogin={loginPlayer}
+      />
+    );
   }
 
   // Oyuncu girişi → Kendi profili
-  if (loggedIn === 'player') {
-    return <MyProfilePanel onLogout={handleLogout} />;
+  if (authState === 'player') {
+    return <MyProfilePanel onLogout={logout} />;
   }
 
   // Admin girişi → Sır Odası
@@ -65,7 +54,7 @@ export default function AdminPanel() {
             </button>
           ))}
           <div style={{ flex: 1 }} />
-          <button className="admin-logout-btn" style={{ margin: '8px 12px' }} onClick={handleLogout}>
+          <button className="admin-logout-btn" style={{ margin: '8px 12px' }} onClick={logout}>
             Çıkış Yap
           </button>
         </nav>
@@ -82,3 +71,4 @@ export default function AdminPanel() {
     </div>
   );
 }
+
