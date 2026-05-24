@@ -98,20 +98,17 @@ export default function TacticsBoard() {
     }
   };
 
-  // Otomatik doldur
+  // Otomatik doldur — Snake Draft ile dengeli dağıtım
   const handleAutoFill = () => {
     if (!players || players.length === 0) return;
-
-    // Önce Takım A'yı doldur
-    const newA = autoFillSlots(teamASlots, players, teamAAssignments);
-    
-    // Takım A'da kullanılanları Takım B'den hariç tut
-    const usedInA = new Set(Object.values(newA).filter(Boolean).map(p => p._id));
-    const remainingForB = players.filter(p => !usedInA.has(p._id));
-    const newB = autoFillSlots(teamBSlots, remainingForB, teamBAssignments);
-
-    setTeamAAssignments(newA);
-    setTeamBAssignments(newB);
+    const { teamA, teamB } = autoFillSlots(
+      teamASlots, teamBSlots,
+      players,
+      teamAAssignments,
+      teamBAssignments
+    );
+    setTeamAAssignments(teamA);
+    setTeamBAssignments(teamB);
   };
 
   // Takımları eşitle
@@ -221,6 +218,10 @@ export default function TacticsBoard() {
               <TeamPowerBar
                 teamAPlayers={teamAPlayers}
                 teamBPlayers={teamBPlayers}
+                teamASlots={teamASlots}
+                teamBSlots={teamBSlots}
+                teamAAssignments={teamAAssignments}
+                teamBAssignments={teamBAssignments}
               />
             </div>
           )}

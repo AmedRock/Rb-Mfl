@@ -627,6 +627,13 @@
   color: var(--text-muted);
 }
 
+.power-bar__pct {
+  font-size: 0.65rem;
+  font-weight: 600;
+  opacity: 0.65;
+  margin-left: 3px;
+}
+
 /* ── Aksiyon Butonları ── */
 .tactics__actions {
   display: flex;
