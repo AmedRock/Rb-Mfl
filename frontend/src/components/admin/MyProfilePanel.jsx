@@ -3,6 +3,7 @@ import { useAuth } from '../../hooks/useAuth';
 import RadarChart from '../profile/RadarChart';
 import MarketChart from '../profile/MarketChart';
 import BadgeList from '../profile/BadgeList';
+import { API_BASE } from '../../utils/apiConfig';
 
 function getCardTier(ovr) {
   if (ovr >= 85) return 'gold';
@@ -30,7 +31,7 @@ export default function MyProfilePanel({ onLogout }) {
   const fetchProfile = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/auth/me', { headers: playerAuthHeader() });
+      const res = await fetch(`${API_BASE}/auth/me`, { headers: playerAuthHeader() });
       const data = await res.json();
       if (res.ok) { setPlayer(data); }
     } catch {}
@@ -68,7 +69,7 @@ export default function MyProfilePanel({ onLogout }) {
       if (photoFile) {
         const formData = new FormData();
         formData.append('photo', photoFile);
-        const uploadRes = await fetch('/api/auth/upload-photo', {
+        const uploadRes = await fetch(`${API_BASE}/auth/upload-photo`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${getPlayerToken()}` },
           body: formData
@@ -78,7 +79,7 @@ export default function MyProfilePanel({ onLogout }) {
         uploadedFilename = uploadData.filename;
       }
 
-      const res = await fetch(`/api/players/${player._id}`, {
+      const res = await fetch(`${API_BASE}/players/${player._id}`, {
         method: 'PUT',
         headers: playerAuthHeader(),
         body: JSON.stringify({

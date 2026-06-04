@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { API_BASE } from '../../utils/apiConfig';
 
 export default function GateScreen({ onAdminLogin, onPlayerLogin }) {
   const [mode, setMode] = useState('choose'); // 'choose' | 'admin' | 'player-login' | 'player-register'
@@ -21,7 +22,7 @@ export default function GateScreen({ onAdminLogin, onPlayerLogin }) {
   const handleAdminLogin = async (e) => {
     e.preventDefault(); setLoading(true); setError('');
     try {
-      const res = await fetch('/api/admin/login', {
+      const res = await fetch(`${API_BASE}/admin/login`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password })
       });
@@ -36,7 +37,7 @@ export default function GateScreen({ onAdminLogin, onPlayerLogin }) {
   const handlePlayerLogin = async (e) => {
     e.preventDefault(); setLoading(true); setError('');
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password: playerPass })
       });
@@ -51,7 +52,7 @@ export default function GateScreen({ onAdminLogin, onPlayerLogin }) {
   const handleRegister = async (e) => {
     e.preventDefault(); setLoading(true); setError(''); setSuccess('');
     try {
-      const res = await fetch('/api/auth/register', {
+      const res = await fetch(`${API_BASE}/auth/register`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email, password: playerPass,

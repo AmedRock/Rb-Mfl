@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useFetch } from '../../hooks/useFetch';
 import { apiAuthPost, apiAuthPut } from '../../hooks/useAuth';
+import { API_BASE } from '../../utils/apiConfig';
 
 const POSITIONS = ['GK','CB','LB','RB','CDM','CM','CAM','LM','RM','LW','RW','ST','CF'];
 const STAT_KEYS = ['pace','shooting','passing','dribbling','defending','physical'];
@@ -72,7 +73,7 @@ export default function ManagePlayersTab({ authHeader }) {
         // FormData gönderilirken Content-Type tarayıcı tarafından otomatik belirlenmeli
         delete headers['Content-Type']; 
 
-        const res = await fetch('/api/admin/upload', {
+        const res = await fetch(`${API_BASE}/admin/upload`, {
           method: 'POST',
           headers: headers,
           body: formData

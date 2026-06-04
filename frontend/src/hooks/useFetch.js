@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+import { API_BASE } from '../utils/apiConfig';
 
 export function useFetch(endpoint, options = {}) {
   const [data, setData] = useState(null);

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useFetch } from '../../hooks/useFetch';
 import { apiAuthPut, apiAuthGet } from '../../hooks/useAuth';
+import { API_BASE } from '../../utils/apiConfig';
 
 const STAT_KEYS = ['pace','shooting','passing','dribbling','defending','physical'];
 const STAT_LABELS = { pace:'Hız', shooting:'Şut', passing:'Pas', dribbling:'Dribling', defending:'Defans', physical:'Fiziksel' };
@@ -27,7 +28,7 @@ export default function PendingPlayersTab({ authHeader }) {
 
   const fetchAllPlayers = async () => {
     try {
-      const res = await fetch('/api/players');
+      const res = await fetch(`${API_BASE}/players`);
       const data = await res.json();
       setAllPlayers(data.filter(p => p.accountStatus === 'none' || !p.accountStatus));
     } catch { setAllPlayers([]); }

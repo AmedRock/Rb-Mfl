@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE } from '../utils/apiConfig';
 
 const NotificationContext = createContext();
 
@@ -10,7 +11,7 @@ export function NotificationProvider({ children }) {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await fetch('/api/news');
+        const response = await fetch(`${API_BASE}/news`);
         const data = await response.json();
         
         if (data && data.length > 0) {

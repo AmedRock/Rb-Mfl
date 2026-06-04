@@ -1,10 +1,11 @@
 // useAuth — AuthContext üzerinden reactive auth state sağlar
 // Geriye dönük uyumluluk korunmuştur: tüm import'lar çalışmaya devam eder.
 export { useAuthContext as useAuth } from '../context/AuthContext';
+import { API_BASE } from '../utils/apiConfig';
 
 // ─── Auth gerektiren API helper'ları ───
 export async function apiAuthPost(endpoint, body, headers) {
-  const response = await fetch(`/api${endpoint}`, {
+  const response = await fetch(`${API_BASE}${endpoint}`, {
     method: 'POST', headers, body: JSON.stringify(body)
   });
   if (!response.ok) {
@@ -15,7 +16,7 @@ export async function apiAuthPost(endpoint, body, headers) {
 }
 
 export async function apiAuthPut(endpoint, body, headers) {
-  const response = await fetch(`/api${endpoint}`, {
+  const response = await fetch(`${API_BASE}${endpoint}`, {
     method: 'PUT', headers, body: JSON.stringify(body)
   });
   if (!response.ok) {
@@ -26,7 +27,7 @@ export async function apiAuthPut(endpoint, body, headers) {
 }
 
 export async function apiAuthDelete(endpoint, headers) {
-  const response = await fetch(`/api${endpoint}`, {
+  const response = await fetch(`${API_BASE}${endpoint}`, {
     method: 'DELETE', headers
   });
   if (!response.ok) {
@@ -37,7 +38,7 @@ export async function apiAuthDelete(endpoint, headers) {
 }
 
 export async function apiAuthGet(endpoint, headers) {
-  const response = await fetch(`/api${endpoint}`, {
+  const response = await fetch(`${API_BASE}${endpoint}`, {
     method: 'GET', headers
   });
   if (!response.ok) {
@@ -46,3 +47,4 @@ export async function apiAuthGet(endpoint, headers) {
   }
   return response.json();
 }
+
