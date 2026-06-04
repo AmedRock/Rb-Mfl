@@ -1,0 +1,81 @@
+.career-timeline {
+  position: relative;
+  padding: 20px 0;
+  margin-top: 20px;
+}
+
+.career-timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 20px;
+  width: 2px;
+  background: var(--border-color);
+  z-index: 1;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 30px;
+  padding-left: 60px;
+  z-index: 2;
+}
+
+.timeline-item__dot {
+  position: absolute;
+  left: 6px;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--accent-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  z-index: 3;
+}
+
+.timeline-item--scandal .timeline-item__dot {
+  border-color: var(--accent-red);
+  background: rgba(255, 82, 82, 0.1);
+}
+
+.timeline-item__content {
+  padding: 15px;
+  border-left: 3px solid var(--accent-blue);
+}
+
+.timeline-item--scandal .timeline-item__content {
+  border-left-color: var(--accent-red);
+  background: rgba(255, 82, 82, 0.05);
+}
+
+.timeline-item__date {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 5px;
+}
+
+.timeline-item__reason {
+  margin: 0 0 10px 0;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  font-family: 'Outfit', sans-serif;
+}
+
+.timeline-item--scandal .timeline-item__reason {
+  color: var(--accent-red);
+}
+
+.timeline-item__value {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.timeline-item__value strong {
+  color: var(--accent-green);
+}

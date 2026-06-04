@@ -14,11 +14,15 @@ const {
   getPendingPlayers,
   approvePlayer,
   rejectPlayer,
-  linkPlayer
+  linkPlayer,
+  deleteNews
 } = require('../controllers/adminController');
 
-// Public (giriş için auth gerekmez)
+// Auth (Admin Giriş)
 router.post('/login', adminLogin);
+
+// Haberler
+router.delete('/news/:id', authMiddleware, deleteNews);
 
 // Korumalı route'lar — JWT gerekli
 router.post('/scandal', authMiddleware, createScandal);

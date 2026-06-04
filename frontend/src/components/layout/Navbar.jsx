@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { FaHome, FaSearch, FaChessBoard, FaCalendarAlt, FaSignInAlt, FaUser, FaLock } from 'react-icons/fa';
+import { FaHome, FaSearch, FaChessBoard, FaCalendarAlt, FaSignInAlt, FaUser, FaLock, FaNewspaper } from 'react-icons/fa';
 import { useAuth } from '../../hooks/useAuth';
 
 export default function Navbar() {
@@ -21,6 +21,7 @@ export default function Navbar() {
     { to: '/scout', label: 'Scout', icon: <FaSearch /> },
     { to: '/tactics', label: 'Taktik', icon: <FaChessBoard /> },
     { to: '/fixtures', label: 'Fikstür', icon: <FaCalendarAlt /> },
+    { to: '/media', label: 'Medya', icon: <FaNewspaper /> },
     authItem
   ];
 
@@ -48,4 +49,3 @@ export default function Navbar() {
     </nav>
   );
 }
-

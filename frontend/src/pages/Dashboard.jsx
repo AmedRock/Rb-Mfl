@@ -2,6 +2,7 @@ import { useFetch } from '../hooks/useFetch';
 import CountdownTimer from '../components/dashboard/CountdownTimer';
 import MarketSummary from '../components/dashboard/MarketSummary';
 import MvpCard from '../components/dashboard/MvpCard';
+import NewsSection from '../components/dashboard/NewsSection';
 import '../styles/dashboard.css';
 
 export default function Dashboard() {
@@ -78,6 +79,9 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+
+      {/* Son Haberler */}
+      <NewsSection />
     </div>
   );
 }

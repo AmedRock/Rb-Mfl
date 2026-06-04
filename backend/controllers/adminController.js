@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const Player = require('../models/Player');
 const Match = require('../models/Match');
 const Scandal = require('../models/Scandal');
+const News = require('../models/News');
 const { applyScandal } = require('../utils/marketEngine');
 
 // POST /api/admin/login - Admin giriş → JWT döndür
@@ -44,6 +45,16 @@ const createScandal = async (req, res) => {
       impactPercent: impact
     });
     await scandal.save();
+
+    // Aynı zamanda genel Haber (News) oluştur
+    const newsItem = new News({
+      type: 'scandal',
+      headline: headline,
+      content: `Dün geceki olaylar sonrasında oyuncunun piyasa değeri %${Math.abs(impact)} düştü.`,
+      targetPlayer,
+      impactPercent: impact
+    });
+    await newsItem.save();
 
     const oldValue = player.marketValue;
     const newValue = applyScandal(oldValue, impact);
@@ -92,9 +103,33 @@ const deleteScandal = async (req, res) => {
     if (!scandal) {
       return res.status(404).json({ message: 'Skandal bulunamadı' });
     }
+    
+    // Bağlı olan News (Haber) kaydını da bulup gizle (Headline'dan eşleştiriyoruz)
+    await News.findOneAndUpdate(
+      { headline: scandal.headline, targetPlayer: scandal.targetPlayer },
+      { isActive: false }
+    );
+
     res.json({ message: 'Skandal kaldırıldı', scandal });
   } catch (error) {
     res.status(500).json({ message: 'Skandal kaldırılamadı', error: error.message });
+  }
+};
+
+// DELETE /api/admin/news/:id - Haberi (News) sil
+const deleteNews = async (req, res) => {
+  try {
+    const news = await News.findByIdAndUpdate(
+      req.params.id,
+      { isActive: false },
+      { new: true }
+    );
+    if (!news) {
+      return res.status(404).json({ message: 'Haber bulunamadı' });
+    }
+    res.json({ message: 'Haber kaldırıldı' });
+  } catch (error) {
+    res.status(500).json({ message: 'Haber kaldırılamadı', error: error.message });
   }
 };
 
@@ -241,5 +276,6 @@ module.exports = {
   getPendingPlayers,
   approvePlayer,
   rejectPlayer,
-  linkPlayer
+  linkPlayer,
+  deleteNews
 };

@@ -4,6 +4,7 @@ import { FaArrowLeft } from 'react-icons/fa';
 import RadarChart from '../components/profile/RadarChart';
 import MarketChart from '../components/profile/MarketChart';
 import BadgeList from '../components/profile/BadgeList';
+import CareerTimeline from '../components/profile/CareerTimeline';
 import '../styles/playerProfile.css';
 
 function getCardTier(overall) {
@@ -179,8 +180,16 @@ export default function PlayerProfile() {
         </div>
       </div>
 
+      {/* Kariyer & Olaylar Çizelgesi */}
+      <div className="player-profile__timeline animate-fade-in animate-fade-in-delay-3" style={{ marginTop: '30px' }}>
+        <h3>🗞️ Kariyer ve Medya Geçmişi</h3>
+        <div className="glass-card" style={{ padding: '20px' }}>
+          <CareerTimeline history={player.marketHistory || []} />
+        </div>
+      </div>
+
       {/* Rozetler */}
-      <div className="player-profile__badges animate-fade-in animate-fade-in-delay-3">
+      <div className="player-profile__badges animate-fade-in animate-fade-in-delay-4" style={{ marginTop: '30px' }}>
         <h3>🏅 Müze - Rozetler</h3>
         <BadgeList badges={player.badges || []} />
       </div>
